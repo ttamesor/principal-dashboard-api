@@ -1,0 +1,8 @@
+{
+  "name": "principal-dashboard-api",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "mssql": "^9.0.0"
+  }
+}
