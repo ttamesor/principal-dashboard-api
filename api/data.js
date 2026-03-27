@@ -58,7 +58,7 @@ export default async function handler(req, res) {
     h.SalesRep,
     h.DocDate,
     h.DocType,
-    h.DocStatus,
+    h.DocStatus
     
 
   FROM DocumentItems i
