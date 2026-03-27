@@ -33,33 +33,43 @@ export default async function handler(req, res) {
 
     // ── CALENDAR ──────────────────────────────────
     else if (mode === 'calendar') {
-      result = await sql.query`
-        SELECT TOP 500
-          i.ID              AS ItemID,
-          i.DocID,
-          i.Description,
-          i.Manufacturer,
-          i.ManufacturerPartNumber,
-          i.QtyTotal,
-          i.UnitPrice,
-          i.UnitCost,
-          i.CustomDate01    AS DeliveryDate,
-          i.CustomDate02    AS WarrantyExpiry,
-          i.CustomText02    AS ShippedStatus,
-          h.DocNo,
-          h.DocName,
-          h.SoldToCompany,
-          h.SalesRep,
-          h.DocDate,
-          h.DocType,
-          h.DocStatus
-        FROM DocumentItems i
-        INNER JOIN DocumentHeaders h ON i.DocID = h.ID
-        WHERE i.CustomDate01 IS NOT NULL
-          AND i.ItemType NOT IN ('4', '256')
-          AND i.UnitPrice > 0
-        ORDER BY i.CustomDate01 ASC
-      `;
+     result = await sql.query`
+  SELECT TOP 1000
+    i.ID              AS ItemID,
+    i.DocID,
+    i.Description,
+    i.Manufacturer,
+    i.ManufacturerPartNumber,
+    i.QtyTotal,
+    i.UnitPrice,
+    i.UnitCost,
+
+    i.CustomDate01    AS DeliveryDate,
+    i.CustomDate02    AS WarrantyExpiry,
+
+    DATEDIFF(day, GETDATE(), i.CustomDate01) AS DeliveryDays,
+    DATEDIFF(day, GETDATE(), i.CustomDate02) AS WarrantyDays,
+
+    i.CustomText02    AS ShippedStatus,
+
+    h.DocNo,
+    h.DocName,
+    h.SoldToCompany,
+    h.SalesRep,
+    h.DocDate,
+    h.DocType,
+    h.DocStatus,
+    h.SalesRepFacingUrl
+
+  FROM DocumentItems i
+  INNER JOIN DocumentHeaders h ON i.DocID = h.ID
+
+  WHERE i.CustomDate01 IS NOT NULL
+    AND i.ItemType NOT IN ('4', '256')
+    AND i.UnitPrice > 0
+
+  ORDER BY i.CustomDate01 ASC
+`;
     }
 
     // ── LIST ──────────────────────────────────────
