@@ -6,7 +6,8 @@ const config = {
   user: process.env.SQL_USER,
   password: process.env.SQL_PASSWORD,
   options: {
-    encrypt: true
+    encrypt: true,
+    trustServerCertificate: false
   }
 };
 
@@ -14,18 +15,79 @@ export default async function handler(req, res) {
   try {
     await sql.connect(config);
 
-    const result = await sql.query`
-      SELECT TOP 20
-        h.DocType,
-        h.DocStatus,
-        COUNT(*) AS DocCount
-      FROM DocumentHeaders h
-      GROUP BY h.DocType, h.DocStatus
-    `;
+    const { mode = 'stats' } = req.query;
+
+    let result;
+
+    // ── STATS ─────────────────────────────────────
+    if (mode === 'stats') {
+      result = await sql.query`
+        SELECT
+          h.DocType,
+          h.DocStatus,
+          COUNT(*) AS DocCount
+        FROM DocumentHeaders h
+        GROUP BY h.DocType, h.DocStatus
+      `;
+    }
+
+    // ── CALENDAR ──────────────────────────────────
+    else if (mode === 'calendar') {
+      result = await sql.query`
+        SELECT TOP 500
+          i.ID              AS ItemID,
+          i.DocID,
+          i.Description,
+          i.Manufacturer,
+          i.ManufacturerPartNumber,
+          i.QtyTotal,
+          i.UnitPrice,
+          i.UnitCost,
+          i.CustomDate01    AS DeliveryDate,
+          i.CustomDate02    AS WarrantyExpiry,
+          i.CustomText02    AS ShippedStatus,
+          h.DocNo,
+          h.DocName,
+          h.SoldToCompany,
+          h.SalesRep,
+          h.DocDate,
+          h.DocType,
+          h.DocStatus
+        FROM DocumentItems i
+        INNER JOIN DocumentHeaders h ON i.DocID = h.ID
+        WHERE i.CustomDate01 IS NOT NULL
+          AND i.ItemType NOT IN ('4', '256')
+          AND i.UnitPrice > 0
+        ORDER BY i.CustomDate01 ASC
+      `;
+    }
+
+    // ── LIST ──────────────────────────────────────
+    else if (mode === 'list') {
+      result = await sql.query`
+        SELECT TOP 200
+          h.ID,
+          h.DocNo,
+          h.DocName,
+          h.DocType,
+          h.DocStatus,
+          h.SoldToCompany,
+          h.SalesRep,
+          h.DocDate
+        FROM DocumentHeaders h
+        ORDER BY h.DocDate DESC
+      `;
+    }
+
+    else {
+      return res.status(400).json({ error: 'Invalid mode' });
+    }
 
     res.status(200).json(result.recordset);
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  } finally {
+    await sql.close();
   }
 }
