@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Operations Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      padding: 20px;
+    }
+
+    h1 { margin-bottom: 10px; }
+    h2 { margin-top: 30px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 12px;
+      border-radius: 10px;
+      border-left: 6px solid grey;
+    }
+
+    .red { border-color: #ef4444; }
+    .amber { border-color: #f59e0b; }
+    .green { border-color: #22c55e; }
+
+    .small {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📊 Operations Dashboard</h1>
+
+<h2>🚚 Deliveries</h2>
+<div id="deliveries" class="grid"></div>
+
+<h2>🛠 Warranty Expiring</h2>
+<div id="warranty" class="grid"></div>
+
+<script>
+async function load() {
+  const res = await fetch('/api/data?mode=calendar');
+  const data = await res.json();
+
+  // Sort by urgency
+  data.sort((a, b) => a.DeliveryDays - b.DeliveryDays);
+
+  const deliveries = document.getElementById('deliveries');
+  const warranty = document.getElementById('warranty');
+
+  data.forEach(item => {
+
+    // DELIVERY
+    if (item.DeliveryDate) {
+      const dClass =
+        item.DeliveryDays < 0 ? 'red' :
+        item.DeliveryDays <= 7 ? 'amber' :
+        'green';
+
+      deliveries.innerHTML += `
+        <div class="card ${dClass}">
+          <b>${item.DocNo}</b><br>
+          ${item.Description}<br>
+          <div class="small">
+            ${item.SoldToCompany}<br>
+            Delivery in ${item.DeliveryDays} days
+          </div>
+        </div>
+      `;
+    }
+
+    // WARRANTY
+    if (item.WarrantyExpiry) {
+      const wClass =
+        item.WarrantyDays < 0 ? 'red' :
+        item.WarrantyDays <= 30 ? 'amber' :
+        'green';
+
+      warranty.innerHTML += `
+        <div class="card ${wClass}">
+          <b>${item.DocNo}</b><br>
+          ${item.Description}<br>
+          <div class="small">
+            ${item.SoldToCompany}<br>
+            Warranty in ${item.WarrantyDays} days
+          </div>
+        </div>
+      `;
+    }
+
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>
