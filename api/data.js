@@ -59,7 +59,7 @@ export default async function handler(req, res) {
     h.DocDate,
     h.DocType,
     h.DocStatus,
-    h.SalesRepFacingUrl
+    
 
   FROM DocumentItems i
   INNER JOIN DocumentHeaders h ON i.DocID = h.ID
