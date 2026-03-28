@@ -197,20 +197,37 @@ export default async function handler(req, res) {
       `);
     }
 
-    // ── SERIAL NUMBER SEARCH ───────────────────────────────────────────
-    // No date floor - serial search spans all historical documents.
+    // ── UNIVERSAL SEARCH ──────────────────────────────────────────────
+    // No date floor - search spans all historical documents.
     else if (mode === 'search') {
-      if (!serial) return res.status(400).json({ error: 'serial parameter required' });
+      const q = req.query.q || '';
+      if (!q) return res.status(400).json({ error: 'q parameter required' });
       const r = pool.request();
-      r.input('serial', sql.NVarChar, '%' + serial.trim() + '%');
+      r.input('q', sql.NVarChar, '%' + q.trim() + '%');
+      r.input('qExact', sql.NVarChar, q.trim());
       result = await r.query(`
-        SELECT TOP 100
+        SELECT TOP 200
           ${ITEM_COLS},
           ${HEADER_COLS}
         FROM DocumentItems i
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
-        WHERE i.CustomText04 LIKE @serial
-        ORDER BY h.DocDate DESC
+        WHERE ${ITEM_FILTER}
+          AND (
+            i.CustomText04 LIKE @q
+            OR h.DocNo LIKE @q
+            OR h.SoldToCompany LIKE @q
+            OR h.SoldToContact LIKE @q
+            OR i.Description LIKE @q
+            OR i.ManufacturerPartNumber LIKE @q
+          )
+        ORDER BY
+          CASE
+            WHEN h.DocNo = @qExact THEN 0
+            WHEN i.CustomText04 = @qExact THEN 1
+            WHEN h.DocNo LIKE @q THEN 2
+            ELSE 3
+          END,
+          h.DocDate DESC
       `);
     }
 
