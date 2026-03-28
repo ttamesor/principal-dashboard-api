@@ -197,14 +197,27 @@ export default async function handler(req, res) {
       `);
     }
 
-    // ── UNIVERSAL SEARCH ──────────────────────────────────────────────
+    // ── SEARCH ────────────────────────────────────────────────────────
     // No date floor - search spans all historical documents.
     else if (mode === 'search') {
-      const q = req.query.q || '';
+      const q          = req.query.q || '';
+      const searchType = req.query.searchType || 'serial';
       if (!q) return res.status(400).json({ error: 'q parameter required' });
+
       const r = pool.request();
       r.input('q', sql.NVarChar, '%' + q.trim() + '%');
-      r.input('qExact', sql.NVarChar, q.trim());
+
+      let whereClause;
+      if (searchType === 'serial') {
+        whereClause = `i.CustomText04 LIKE @q`;
+      } else if (searchType === 'company') {
+        whereClause = `(h.SoldToCompany LIKE @q OR h.SoldToContact LIKE @q)`;
+      } else if (searchType === 'docno') {
+        whereClause = `h.DocNo LIKE @q`;
+      } else {
+        whereClause = `(i.CustomText04 LIKE @q OR h.DocNo LIKE @q OR h.SoldToCompany LIKE @q)`;
+      }
+
       result = await r.query(`
         SELECT TOP 200
           ${ITEM_COLS},
@@ -212,22 +225,8 @@ export default async function handler(req, res) {
         FROM DocumentItems i
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE ${ITEM_FILTER}
-          AND (
-            i.CustomText04 LIKE @q
-            OR h.DocNo LIKE @q
-            OR h.SoldToCompany LIKE @q
-            OR h.SoldToContact LIKE @q
-            OR i.Description LIKE @q
-            OR i.ManufacturerPartNumber LIKE @q
-          )
-        ORDER BY
-          CASE
-            WHEN h.DocNo = @qExact THEN 0
-            WHEN i.CustomText04 = @qExact THEN 1
-            WHEN h.DocNo LIKE @q THEN 2
-            ELSE 3
-          END,
-          h.DocDate DESC
+          AND (${whereClause})
+        ORDER BY h.DocDate DESC
       `);
     }
 
