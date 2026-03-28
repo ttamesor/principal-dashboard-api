@@ -1016,7 +1016,7 @@ body::before {
       <div class="page-title" id="pageTitle">Calendar</div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input class="search-input" id="serialSearch" placeholder="Search serial number..." oninput="handleSerialSearch(this.value)">
+        <input class="search-input" id="serialSearch" placeholder="Search serial, doc no, company, contact, part no… (Ctrl+K)" oninput="handleSerialSearch(this.value)">
         <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
       </div>
       <button class="refresh-btn" onclick="refreshCurrent()">↺ Refresh</button>
@@ -1674,50 +1674,53 @@ function handleSerialSearch(val) {
   clearTimeout(searchTimeout);
   if (val.trim().length < 2) return;
 
-  searchTimeout = setTimeout(() => runSerialSearch(val.trim()), 400);
+  searchTimeout = setTimeout(() => runSearch(val.trim()), 400);
 }
 
-async function runSerialSearch(serial) {
+async function runSearch(q) {
   currentTab = 'search';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('pageTitle').textContent = 'Serial Number Search';
+  document.getElementById('pageTitle').textContent = 'Search Results';
 
   const area = document.getElementById('contentArea');
   area.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
   try {
-    const data = await apiFetch({ mode: 'search', serial });
+    const data = await apiFetch({ mode: 'search', q });
 
     if (!data.length) {
       area.innerHTML = `
-        <div class="search-bar-notice">Searching for: "${serial}"</div>
-        <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No items found matching "${serial}"</div></div>`;
+        <div class="search-bar-notice">No results for: "${q}"</div>
+        <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Try a doc number, company name, contact, serial number or part number</div></div>`;
       return;
     }
 
+    // Group by DocNo so duplicate items from same doc are visually clear
     const rows = data.map(i => `
       <tr onclick="showDetail(${i.ItemID})">
-        <td class="td-serial" style="font-size:0.8rem;font-weight:500;color:var(--cyan)">${i.SerialNumber || '—'}</td>
-        <td class="td-docno">${i.DocNo || '—'}</td>
+        <td class="td-docno">${i.DocNo || '—'}<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${i.DocType || ''} · ${i.DocStatus || ''}</div></td>
         <td class="td-desc">${i.Description || '—'}</td>
-        <td class="td-company">${i.SoldToCompany || '—'}</td>
+        <td class="td-company">${i.SoldToCompany || '—'}<div style="font-size:0.68rem;color:var(--muted);margin-top:1px">${i.SoldToContact || ''}</div></td>
+        <td class="td-serial">${i.SerialNumber || '—'}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${i.ManufacturerPartNumber || '—'}</td>
         <td>${shippedPill(i.ShippedStatus)}</td>
         <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
-        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.DocType || '—'}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep || '—'}</td>
       </tr>`).join('');
 
     area.innerHTML = `
-      <div class="search-bar-notice">Showing ${data.length} result${data.length !== 1 ? 's' : ''} for serial: "${serial}"</div>
+      <div class="search-bar-notice">${data.length} result${data.length !== 1 ? 's' : ''} for: "<strong>${q}</strong>"</div>
       <table class="item-table">
         <thead>
           <tr>
-            <th>Serial No</th>
             <th>Doc No</th>
             <th>Description</th>
-            <th>Company</th>
+            <th>Company / Contact</th>
+            <th>Serial No</th>
+            <th>Part No</th>
             <th>Shipped</th>
             <th>Delivery</th>
-            <th>Type</th>
+            <th>Rep</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
