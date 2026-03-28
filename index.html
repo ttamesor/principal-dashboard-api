@@ -1438,12 +1438,15 @@ async function loadTab(tab) {
       await loadCalendar();
     } else if (tab === 'upcoming') {
       const data = await apiFetch({ mode: 'upcoming' });
+      updateStatBadge('stat-upcoming', data.length);
       renderItemTable(data, 'Upcoming Deliveries — next 90 days');
     } else if (tab === 'overdue') {
       const data = await apiFetch({ mode: 'overdue' });
+      updateStatBadge('stat-overdue', data.length);
       renderItemTable(data, 'Overdue — past delivery date, not shipped');
     } else if (tab === 'unshipped') {
       const data = await apiFetch({ mode: 'unshipped' });
+      updateStatBadge('stat-unshipped', data.length);
       renderItemTable(data, 'Unshipped items with delivery dates');
     } else if (tab === 'shipped') {
       const data = await apiFetch({ mode: 'shipped' });
