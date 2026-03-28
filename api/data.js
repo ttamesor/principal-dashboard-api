@@ -8,7 +8,7 @@ const config = {
   options: { encrypt: true, trustServerCertificate: false }
 };
 
-const ITEM_FILTER  = `i.ItemType NOT IN ('4', '256') AND i.UnitPrice > 0`;
+const ITEM_FILTER  = `i.LineType = 1`;
 const DATE_FLOOR   = `'2026-01-01'`;
 
 const ITEM_COLS = `
@@ -22,14 +22,11 @@ const ITEM_COLS = `
   i.UnitCost,
   i.ExtendedPrice,
   i.CustomDate01    AS DeliveryDate,
-  i.CustomDate02    AS WarrantyExpiry,
   i.CustomText02    AS ShippedStatus,
   i.CustomText03    AS CustomText03,
   i.CustomText04    AS SerialNumber,
   i.Notes,
-  i.Category,
-  DATEDIFF(day, GETDATE(), i.CustomDate01) AS DeliveryDays,
-  DATEDIFF(day, GETDATE(), i.CustomDate02) AS WarrantyDays
+  DATEDIFF(day, GETDATE(), i.CustomDate01) AS DeliveryDays
 `;
 
 const HEADER_COLS = `
