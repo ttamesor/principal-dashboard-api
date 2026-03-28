@@ -283,6 +283,60 @@ body::before {
 
 .search-clear.visible { display: block; }
 
+/* Three search boxes */
+.search-trio {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.search-wrap-sm {
+  position: relative;
+  width: 170px;
+}
+
+.search-icon-sm {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.search-input-sm {
+  width: 100%;
+  padding: 7px 26px 7px 30px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input-sm::placeholder { color: var(--muted); }
+.search-input-sm:focus { border-color: var(--blue); }
+
+.search-clear-sm {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.search-clear-sm.visible { display: block; }
+
 .refresh-btn {
   background: var(--bg3);
   border: 1px solid var(--border2);
@@ -1014,10 +1068,22 @@ body::before {
     <!-- TOPBAR -->
     <div class="topbar">
       <div class="page-title" id="pageTitle">Calendar</div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input class="search-input" id="serialSearch" placeholder="Search serial, doc no, company, contact, part no… (Ctrl+K)" oninput="handleSerialSearch(this.value)">
-        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      <div class="search-trio">
+        <div class="search-wrap-sm">
+          <span class="search-icon-sm">🔢</span>
+          <input class="search-input-sm" id="searchSerial" placeholder="Serial number…" oninput="handleSearch('serial', this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearSerial" onclick="clearSearchBox('serial')">✕</button>
+        </div>
+        <div class="search-wrap-sm">
+          <span class="search-icon-sm">🏢</span>
+          <input class="search-input-sm" id="searchCompany" placeholder="Company…" oninput="handleSearch('company', this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearCompany" onclick="clearSearchBox('company')">✕</button>
+        </div>
+        <div class="search-wrap-sm">
+          <span class="search-icon-sm">📄</span>
+          <input class="search-input-sm" id="searchDocNo" placeholder="Doc number…" oninput="handleSearch('docno', this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearDocNo" onclick="clearSearchBox('docno')">✕</button>
+        </div>
       </div>
       <button class="refresh-btn" onclick="refreshCurrent()">↺ Refresh</button>
     </div>
@@ -1218,7 +1284,7 @@ function switchTab(btn, tab) {
   };
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
 
-  clearSearchInput();
+  clearAllSearches();
   loadTab(tab);
 }
 
@@ -1667,17 +1733,28 @@ function closePanel(e) {
 }
 
 // ── Serial search ──────────────────────────────────────────────────────────
-function handleSerialSearch(val) {
-  const clear = document.getElementById('searchClear');
-  clear.classList.toggle('visible', val.length > 0);
+function handleSearch(type, val) {
+  const clearIds = { serial: 'clearSerial', company: 'clearCompany', docno: 'clearDocNo' };
+  const clearEl = document.getElementById(clearIds[type]);
+  if (clearEl) clearEl.classList.toggle('visible', val.length > 0);
 
   clearTimeout(searchTimeout);
   if (val.trim().length < 2) return;
 
-  searchTimeout = setTimeout(() => runSearch(val.trim()), 400);
+  searchTimeout = setTimeout(() => runSearch(type, val.trim()), 400);
 }
 
-async function runSearch(q) {
+function clearSearchBox(type) {
+  const inputIds = { serial: 'searchSerial', company: 'searchCompany', docno: 'searchDocNo' };
+  const clearIds = { serial: 'clearSerial',  company: 'clearCompany',  docno: 'clearDocNo' };
+  const input = document.getElementById(inputIds[type]);
+  const clear = document.getElementById(clearIds[type]);
+  if (input) input.value = '';
+  if (clear) clear.classList.remove('visible');
+  if (currentTab === 'search') switchTab(document.querySelector('[data-tab="calendar"]'), 'calendar');
+}
+
+async function runSearch(type, q) {
   currentTab = 'search';
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('pageTitle').textContent = 'Search Results';
@@ -1686,7 +1763,7 @@ async function runSearch(q) {
   area.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
 
   try {
-    const data = await apiFetch({ mode: 'search', q });
+    const data = await apiFetch({ mode: 'search', q, searchType: type });
 
     if (!data.length) {
       area.innerHTML = `
@@ -1730,16 +1807,19 @@ async function runSearch(q) {
   }
 }
 
-function clearSearch() {
-  document.getElementById('serialSearch').value = '';
-  document.getElementById('searchClear').classList.remove('visible');
-  const btn = document.querySelector(`[data-tab="${currentTab === 'search' ? 'calendar' : currentTab}"]`);
-  if (currentTab === 'search') switchTab(document.querySelector('[data-tab="calendar"]'), 'calendar');
+function clearAllSearches() {
+  ['searchSerial','searchCompany','searchDocNo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['clearSerial','clearCompany','clearDocNo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('visible');
+  });
 }
 
 function clearSearchInput() {
-  document.getElementById('serialSearch').value = '';
-  document.getElementById('searchClear').classList.remove('visible');
+  clearAllSearches();
 }
 
 // ── Keyboard ──────────────────────────────────────────────────────────────
@@ -1750,7 +1830,7 @@ document.addEventListener('keydown', e => {
   }
   if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
-    document.getElementById('serialSearch').focus();
+    document.getElementById('searchSerial').focus();
   }
 });
 
