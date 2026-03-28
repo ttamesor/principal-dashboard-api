@@ -1,107 +1,1834 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Operations Dashboard</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #0f172a;
-      color: white;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Principal Climate - Operations Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #080d17;
+  --bg2:     #0d1424;
+  --bg3:     #131c30;
+  --bg4:     #1a253d;
+  --border:  rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --text:    #dde4f0;
+  --dim:     #6b7a96;
+  --muted:   #3a4560;
+  --blue:    #3b82f6;
+  --cyan:    #06b6d4;
+  --green:   #10b981;
+  --amber:   #f59e0b;
+  --red:     #ef4444;
+  --purple:  #8b5cf6;
+  --orange:  #f97316;
+  --mono:    'DM Mono', monospace;
+  --sans:    'DM Sans', sans-serif;
+}
 
-    h1 { margin-bottom: 10px; }
-    h2 { margin-top: 30px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
-    }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 15px;
+}
 
-    .card {
-      background: #1e293b;
-      padding: 12px;
-      border-radius: 10px;
-      border-left: 6px solid grey;
-    }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 0% 0%, rgba(59,130,246,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 100% 100%, rgba(16,185,129,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-    .red { border-color: #ef4444; }
-    .amber { border-color: #f59e0b; }
-    .green { border-color: #22c55e; }
+.layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
 
-    .small {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-  </style>
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.brand {
+  padding: 22px 18px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.brand-icon {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.brand-sub {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.nav-area {
+  padding: 12px 10px;
+  flex: 1;
+}
+
+.nav-section-label {
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  padding: 10px 8px 5px;
+}
+
+.nav-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: all 0.12s;
+  text-align: left;
+  position: relative;
+}
+
+.nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+
+.nav-btn.active {
+  background: rgba(59,130,246,0.12);
+  color: var(--blue);
+}
+
+.nav-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  background: var(--blue);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-icon { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  background: var(--bg4);
+  border-radius: 8px;
+  padding: 1px 6px;
+  color: var(--dim);
+  flex-shrink: 0;
+}
+
+.nav-btn.active .nav-badge {
+  background: rgba(59,130,246,0.2);
+  color: var(--blue);
+}
+
+.nav-btn.danger.active { background: rgba(239,68,68,0.12); color: var(--red); }
+.nav-btn.danger.active::before { background: var(--red); }
+.nav-btn.danger.active .nav-badge { background: rgba(239,68,68,0.2); color: var(--red); }
+
+.nav-btn.amber.active { background: rgba(245,158,11,0.12); color: var(--amber); }
+.nav-btn.amber.active::before { background: var(--amber); }
+.nav-btn.amber.active .nav-badge { background: rgba(245,158,11,0.2); color: var(--amber); }
+
+.nav-btn.green.active { background: rgba(16,185,129,0.12); color: var(--green); }
+.nav-btn.green.active::before { background: var(--green); }
+.nav-btn.green.active .nav-badge { background: rgba(16,185,129,0.2); color: var(--green); }
+
+.sidebar-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ── MAIN ── */
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  background: var(--bg2);
+}
+
+.page-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.search-wrap {
+  flex: 1;
+  max-width: 400px;
+  position: relative;
+  margin-left: auto;
+}
+
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--blue); }
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.search-clear.visible { display: block; }
+
+.refresh-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.refresh-btn:hover { background: var(--bg4); color: var(--text); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.stat-cell {
+  padding: 14px 16px;
+  border-right: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.stat-cell:last-child { border-right: none; }
+.stat-cell:hover { background: rgba(255,255,255,0.02); }
+
+.stat-cell::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.stat-cell.c-blue::after  { background: linear-gradient(90deg, var(--blue), transparent); }
+.stat-cell.c-green::after { background: linear-gradient(90deg, var(--green), transparent); }
+.stat-cell.c-amber::after { background: linear-gradient(90deg, var(--amber), transparent); }
+.stat-cell.c-red::after   { background: linear-gradient(90deg, var(--red), transparent); }
+.stat-cell.c-cyan::after  { background: linear-gradient(90deg, var(--cyan), transparent); }
+.stat-cell.c-purple::after{ background: linear-gradient(90deg, var(--purple), transparent); }
+
+.stat-label {
+  font-size: 0.62rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+
+.stat-val {
+  font-family: var(--mono);
+  font-size: 1.35rem;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.stat-cell.c-blue .stat-val  { color: var(--blue); }
+.stat-cell.c-green .stat-val { color: var(--green); }
+.stat-cell.c-amber .stat-val { color: var(--amber); }
+.stat-cell.c-red .stat-val   { color: var(--red); }
+.stat-cell.c-cyan .stat-val  { color: var(--cyan); }
+.stat-cell.c-purple .stat-val{ color: var(--purple); }
+
+.stat-sub {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── CONTENT ── */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 20px 24px;
+}
+
+.content-area::-webkit-scrollbar { width: 4px; }
+.content-area::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* ── CALENDAR ── */
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.cal-month-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  flex: 1;
+}
+
+.cal-nav-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--dim);
+  font-size: 0.9rem;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cal-nav-btn:hover { background: var(--bg4); color: var(--text); }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day-header {
+  text-align: center;
+  font-size: 0.62rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 6px 0;
+}
+
+.cal-day {
+  min-height: 72px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  transition: background 0.12s;
+  cursor: default;
+  position: relative;
+}
+
+.cal-day.has-items { cursor: pointer; }
+.cal-day.has-items:hover { background: var(--bg3); border-color: var(--border2); }
+
+.cal-day.today { border-color: var(--blue); background: rgba(59,130,246,0.06); }
+
+.cal-day.other-month { opacity: 0.3; }
+
+.cal-day-num {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  color: var(--dim);
+  margin-bottom: 4px;
+}
+
+.cal-day.today .cal-day-num { color: var(--blue); font-weight: 600; }
+
+.cal-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.cal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  font-size: 0;
+  flex-shrink: 0;
+}
+
+.cal-dot.shipped   { background: var(--green); }
+.cal-dot.unshipped { background: var(--amber); }
+.cal-dot.overdue   { background: var(--red); }
+
+.cal-count {
+  position: absolute;
+  bottom: 5px;
+  right: 6px;
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  color: var(--muted);
+}
+
+/* ── ITEM LIST ── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--dim);
+}
+
+.section-count {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.item-table th {
+  text-align: left;
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.item-table td {
+  padding: 9px 10px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.item-table tr { transition: background 0.1s; cursor: pointer; }
+.item-table tr:hover td { background: rgba(255,255,255,0.025); }
+.item-table tr:last-child td { border-bottom: none; }
+
+.td-docno {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--blue);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.td-desc {
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.td-company {
+  color: var(--dim);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.td-serial {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--cyan);
+}
+
+.td-date {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.td-days {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.days-ok     { color: var(--green); }
+.days-soon   { color: var(--amber); }
+.days-overdue{ color: var(--red); }
+.days-past   { color: var(--muted); }
+
+/* Status pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 0.62rem;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.pill-shipped   { background: rgba(16,185,129,0.12);  color: var(--green);  border: 1px solid rgba(16,185,129,0.2); }
+.pill-unshipped { background: rgba(245,158,11,0.12);  color: var(--amber);  border: 1px solid rgba(245,158,11,0.2); }
+.pill-overdue   { background: rgba(239,68,68,0.12);   color: var(--red);    border: 1px solid rgba(239,68,68,0.2); }
+.pill-order     { background: rgba(59,130,246,0.12);  color: var(--blue);   border: 1px solid rgba(59,130,246,0.2); }
+.pill-quote     { background: rgba(139,92,246,0.12);  color: var(--purple); border: 1px solid rgba(139,92,246,0.2); }
+
+/* ── SEARCH RESULTS ── */
+.search-bar-notice {
+  padding: 10px 14px;
+  background: rgba(6,182,212,0.08);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--cyan);
+  margin-bottom: 14px;
+  font-family: var(--mono);
+}
+
+/* ── EMPTY ── */
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.empty-icon { font-size: 2rem; margin-bottom: 10px; opacity: 0.4; }
+.empty-text { font-size: 0.82rem; }
+
+/* ── LOADER ── */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── DETAIL PANEL ── */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+
+.panel-overlay.open { opacity: 1; visibility: visible; }
+
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 480px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border2);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.panel-overlay.open .detail-panel { transform: translateX(0); }
+
+.panel-head {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.panel-docno {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--blue);
+  margin-bottom: 3px;
+}
+
+.panel-desc {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.panel-company {
+  font-size: 0.78rem;
+  color: var(--dim);
+  margin-top: 3px;
+}
+
+.panel-close {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--dim);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.panel-close:hover { background: var(--bg4); color: var(--text); }
+
+.panel-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.panel-body::-webkit-scrollbar { width: 3px; }
+.panel-body::-webkit-scrollbar-thumb { background: var(--bg4); }
+
+/* Serial number hero */
+.serial-hero {
+  background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(59,130,246,0.08));
+  border: 1px solid rgba(6,182,212,0.25);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.serial-label {
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--cyan);
+  margin-bottom: 5px;
+}
+
+.serial-value {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+
+.serial-empty {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Detail grid */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.detail-cell {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.detail-cell.full { grid-column: 1 / -1; }
+
+.dc-label {
+  font-size: 0.58rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.dc-val {
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.dc-val.green  { color: var(--green); font-family: var(--mono); }
+.dc-val.amber  { color: var(--amber); font-family: var(--mono); }
+.dc-val.red    { color: var(--red);   font-family: var(--mono); }
+.dc-val.blue   { color: var(--blue);  font-family: var(--mono); }
+.dc-val.cyan   { color: var(--cyan);  font-family: var(--mono); }
+.dc-val.mono   { font-family: var(--mono); font-size: 0.78rem; }
+
+.panel-section-title {
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+  margin: 14px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Day items modal ── */
+.day-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+}
+
+.day-modal-overlay.open { opacity: 1; visibility: visible; }
+
+.day-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(8px) scale(0.98);
+  transition: transform 0.2s;
+}
+
+.day-modal-overlay.open .day-modal { transform: translateY(0) scale(1); }
+
+.day-modal-head {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.day-modal-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.day-modal-close {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--dim);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+}
+
+.day-modal-close:hover { background: var(--bg4); color: var(--text); }
+
+.day-modal-body {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.day-modal-body::-webkit-scrollbar { width: 3px; }
+.day-modal-body::-webkit-scrollbar-thumb { background: var(--bg4); }
+
+.day-item-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  gap: 12px;
+  align-items: center;
+  transition: background 0.1s;
+}
+
+.day-item-row:hover { background: rgba(255,255,255,0.025); }
+.day-item-row:last-child { border-bottom: none; }
+
+.di-desc { font-size: 0.82rem; font-weight: 500; margin-bottom: 2px; }
+.di-sub  { font-size: 0.72rem; color: var(--dim); }
+.di-serial { font-family: var(--mono); font-size: 0.68rem; color: var(--cyan); margin-top: 2px; }
+
+/* ── DOC LIST TABLE ── */
+.doc-table { width: 100%; border-collapse: collapse; }
+
+.doc-table th {
+  text-align: left;
+  font-size: 0.6rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.doc-table td {
+  padding: 9px 10px;
+  font-size: 0.8rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.doc-table tr { transition: background 0.1s; cursor: pointer; }
+.doc-table tr:hover td { background: rgba(255,255,255,0.025); }
+.doc-table tr:last-child td { border-bottom: none; }
+
+.progress-bar {
+  height: 4px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+</style>
 </head>
 <body>
 
-<h1>📊 Operations Dashboard</h1>
+<div class="layout">
 
-<h2>🚚 Deliveries</h2>
-<div id="deliveries" class="grid"></div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">
+        <div class="brand-icon">❄</div>
+        <div>
+          <div class="brand-name">Principal Climate</div>
+        </div>
+      </div>
+      <div class="brand-sub">Operations Dashboard</div>
+    </div>
 
-<h2>🛠 Warranty Expiring</h2>
-<div id="warranty" class="grid"></div>
+    <nav class="nav-area">
+      <div class="nav-section-label">Deliveries</div>
+      <button class="nav-btn active" data-tab="calendar" onclick="switchTab(this,'calendar')">
+        <span class="nav-icon">📅</span> Calendar
+      </button>
+      <button class="nav-btn amber" data-tab="upcoming" onclick="switchTab(this,'upcoming')">
+        <span class="nav-icon">🚚</span> Upcoming
+        <span class="nav-badge" id="badge-upcoming">-</span>
+      </button>
+      <button class="nav-btn danger" data-tab="overdue" onclick="switchTab(this,'overdue')">
+        <span class="nav-icon">⚠</span> Overdue
+        <span class="nav-badge" id="badge-overdue">-</span>
+      </button>
+
+      <div class="nav-section-label">Shipping</div>
+      <button class="nav-btn" data-tab="unshipped" onclick="switchTab(this,'unshipped')">
+        <span class="nav-icon">📦</span> Unshipped
+        <span class="nav-badge" id="badge-unshipped">-</span>
+      </button>
+      <button class="nav-btn green" data-tab="shipped" onclick="switchTab(this,'shipped')">
+        <span class="nav-icon">✓</span> Shipped
+        <span class="nav-badge" id="badge-shipped">-</span>
+      </button>
+
+      <div class="nav-section-label">Warranty</div>
+      <button class="nav-btn" data-tab="warranty" onclick="switchTab(this,'warranty')">
+        <span class="nav-icon">🛡</span> Warranty Tracker
+        <span class="nav-badge" id="badge-warranty">-</span>
+      </button>
+
+      <div class="nav-section-label">Orders</div>
+      <button class="nav-btn" data-tab="new-orders" onclick="switchTab(this,'new-orders')">
+        <span class="nav-icon">🆕</span> New Orders
+        <span class="nav-badge" id="badge-new-orders">-</span>
+      </button>
+      <button class="nav-btn green" data-tab="completed-orders" onclick="switchTab(this,'completed-orders')">
+        <span class="nav-icon">✓</span> Completed
+        <span class="nav-badge" id="badge-completed-orders">-</span>
+      </button>
+
+      <div class="nav-section-label">Quotes</div>
+      <button class="nav-btn" data-tab="open-quotes" onclick="switchTab(this,'open-quotes')">
+        <span class="nav-icon">◈</span> Open Quotes
+        <span class="nav-badge" id="badge-open-quotes">-</span>
+      </button>
+      <button class="nav-btn green" data-tab="won-quotes" onclick="switchTab(this,'won-quotes')">
+        <span class="nav-icon">★</span> Won Quotes
+        <span class="nav-badge" id="badge-won-quotes">-</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer" id="lastUpdated">Loading...</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title" id="pageTitle">Calendar</div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="serialSearch" placeholder="Search serial number..." oninput="handleSerialSearch(this.value)">
+        <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+      </div>
+      <button class="refresh-btn" onclick="refreshCurrent()">↺ Refresh</button>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-cell c-blue" onclick="switchTab(document.querySelector('[data-tab=new-orders]'),'new-orders')">
+        <div class="stat-label">New Orders</div>
+        <div class="stat-val" id="stat-new-orders">-</div>
+        <div class="stat-sub">active</div>
+      </div>
+      <div class="stat-cell c-green" onclick="switchTab(document.querySelector('[data-tab=completed-orders]'),'completed-orders')">
+        <div class="stat-label">Completed</div>
+        <div class="stat-val" id="stat-completed">-</div>
+        <div class="stat-sub">orders</div>
+      </div>
+      <div class="stat-cell c-amber" onclick="switchTab(document.querySelector('[data-tab=upcoming]'),'upcoming')">
+        <div class="stat-label">Upcoming</div>
+        <div class="stat-val" id="stat-upcoming">-</div>
+        <div class="stat-sub">deliveries 90d</div>
+      </div>
+      <div class="stat-cell c-red" onclick="switchTab(document.querySelector('[data-tab=overdue]'),'overdue')">
+        <div class="stat-label">Overdue</div>
+        <div class="stat-val" id="stat-overdue">-</div>
+        <div class="stat-sub">not shipped</div>
+      </div>
+      <div class="stat-cell c-cyan" onclick="switchTab(document.querySelector('[data-tab=unshipped]'),'unshipped')">
+        <div class="stat-label">Unshipped</div>
+        <div class="stat-val" id="stat-unshipped">-</div>
+        <div class="stat-sub">with delivery date</div>
+      </div>
+      <div class="stat-cell c-purple" onclick="switchTab(document.querySelector('[data-tab=open-quotes]'),'open-quotes')">
+        <div class="stat-label">Open Quotes</div>
+        <div class="stat-val" id="stat-open-quotes">-</div>
+        <div class="stat-sub">in pipeline</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area" id="contentArea">
+      <div class="loader"><div class="spinner"></div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel(event)">
+  <div class="detail-panel" onclick="event.stopPropagation()">
+    <div class="panel-head">
+      <div>
+        <div class="panel-docno" id="pDocNo"></div>
+        <div class="panel-desc" id="pDesc"></div>
+        <div class="panel-company" id="pCompany"></div>
+      </div>
+      <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="panel-body" id="panelBody"></div>
+  </div>
+</div>
+
+<!-- DAY MODAL -->
+<div class="day-modal-overlay" id="dayModalOverlay" onclick="closeDayModal(event)">
+  <div class="day-modal" onclick="event.stopPropagation()">
+    <div class="day-modal-head">
+      <div class="day-modal-title" id="dayModalTitle"></div>
+      <button class="day-modal-close" onclick="closeDayModal()">✕</button>
+    </div>
+    <div class="day-modal-body" id="dayModalBody"></div>
+  </div>
+</div>
 
 <script>
-async function load() {
-  const res = await fetch('/api/data?mode=calendar');
-  const data = await res.json();
+const API = '/api/data';
 
-  // Sort by urgency
-  data.sort((a, b) => a.DeliveryDays - b.DeliveryDays);
+let currentTab    = 'calendar';
+let calYear       = new Date().getFullYear();
+let calMonth      = new Date().getMonth() + 1;
+let calData       = [];
+let searchTimeout = null;
+let statsCache    = null;
 
-  const deliveries = document.getElementById('deliveries');
-  const warranty = document.getElementById('warranty');
-
-  data.forEach(item => {
-
-    // DELIVERY
-    if (item.DeliveryDate) {
-      const dClass =
-        item.DeliveryDays < 0 ? 'red' :
-        item.DeliveryDays <= 7 ? 'amber' :
-        'green';
-
-      deliveries.innerHTML += `
-        <div class="card ${dClass}">
-          <b>${item.DocNo}</b><br>
-          ${item.Description}<br>
-          <div class="small">
-            ${item.SoldToCompany}<br>
-            Delivery in ${item.DeliveryDays} days
-          </div>
-        </div>
-      `;
-    }
-
-    // WARRANTY
-    if (item.WarrantyExpiry) {
-      const wClass =
-        item.WarrantyDays < 0 ? 'red' :
-        item.WarrantyDays <= 30 ? 'amber' :
-        'green';
-
-      warranty.innerHTML += `
-        <div class="card ${wClass}">
-          <b>${item.DocNo}</b><br>
-          ${item.Description}<br>
-          <div class="small">
-            ${item.SoldToCompany}<br>
-            Warranty in ${item.WarrantyDays} days
-          </div>
-        </div>
-      `;
-    }
-
-  });
+// ── Helpers ──────────────────────────────────────────────────────────────
+function fmt(v)     { return parseFloat(v || 0).toLocaleString('en-GB', { style:'currency', currency:'GBP', maximumFractionDigits:0 }); }
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function fmtShort(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+}
+function daysClass(n) {
+  if (n === null || n === undefined) return '';
+  if (n < 0)  return 'days-overdue';
+  if (n <= 7) return 'days-soon';
+  return 'days-ok';
+}
+function daysLabel(n) {
+  if (n === null || n === undefined) return '—';
+  if (n === 0)  return 'Today';
+  if (n === 1)  return 'Tomorrow';
+  if (n < 0)    return Math.abs(n) + 'd overdue';
+  return n + 'd';
+}
+function shippedPill(s) {
+  if (!s) return '<span class="pill pill-unshipped">Unshipped</span>';
+  if (s.toLowerCase().includes('shipped')) return '<span class="pill pill-shipped">✓ ' + s + '</span>';
+  return '<span class="pill pill-unshipped">' + (s || 'Unshipped') + '</span>';
+}
+function docTypePill(t) {
+  if (!t) return '';
+  if (t === 'ORDER') return '<span class="pill pill-order">Order</span>';
+  return '<span class="pill pill-quote">Quote</span>';
 }
 
-load();
-</script>
+// ── Fetch helpers ─────────────────────────────────────────────────────────
+async function apiFetch(params) {
+  const url = API + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
 
+// ── Stats ─────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const data = await apiFetch({ mode: 'stats' });
+    statsCache = data;
+
+    const get = (type, status) => {
+      const row = data.find(r =>
+        r.DocType === type && r.DocStatus === status
+      );
+      return row ? row.DocCount : 0;
+    };
+    const getAll = (type) => data.filter(r => r.DocType === type).reduce((s, r) => s + (r.DocCount || 0), 0);
+
+    const newOrders       = get('ORDER', 'New Order');
+    const completedOrders = get('ORDER', 'Completed Order');
+    const openQuotes      = get('QUOTE', 'Open');
+    const wonQuotes       = get('QUOTE', 'Won');
+
+    document.getElementById('stat-new-orders').textContent  = newOrders;
+    document.getElementById('stat-completed').textContent   = completedOrders;
+    document.getElementById('stat-open-quotes').textContent = openQuotes;
+
+    document.getElementById('badge-new-orders').textContent       = newOrders;
+    document.getElementById('badge-completed-orders').textContent = completedOrders;
+    document.getElementById('badge-open-quotes').textContent      = openQuotes;
+    document.getElementById('badge-won-quotes').textContent       = wonQuotes;
+
+    // Load quick counts for delivery stats
+    loadDeliveryStats();
+
+  } catch (e) {
+    console.error('Stats error:', e);
+  }
+}
+
+async function loadDeliveryStats() {
+  try {
+    const [upcoming, overdue, unshipped, shipped, warranty] = await Promise.all([
+      apiFetch({ mode: 'upcoming' }),
+      apiFetch({ mode: 'overdue' }),
+      apiFetch({ mode: 'unshipped' }),
+      apiFetch({ mode: 'shipped' }),
+      apiFetch({ mode: 'warranty' })
+    ]);
+
+    document.getElementById('stat-upcoming').textContent  = upcoming.length;
+    document.getElementById('stat-overdue').textContent   = overdue.length;
+    document.getElementById('stat-unshipped').textContent = unshipped.length;
+
+    document.getElementById('badge-upcoming').textContent  = upcoming.length;
+    document.getElementById('badge-overdue').textContent   = overdue.length;
+    document.getElementById('badge-unshipped').textContent = unshipped.length;
+    document.getElementById('badge-shipped').textContent   = shipped.length;
+    document.getElementById('badge-warranty').textContent  = warranty.length;
+
+    document.getElementById('lastUpdated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+
+  } catch (e) {
+    console.error('Delivery stats error:', e);
+  }
+}
+
+// ── Tab switching ──────────────────────────────────────────────────────────
+function switchTab(btn, tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const titles = {
+    'calendar':          'Delivery Calendar',
+    'upcoming':          'Upcoming Deliveries',
+    'overdue':           'Overdue — Not Shipped',
+    'unshipped':         'Unshipped Items',
+    'shipped':           'Shipped Items',
+    'warranty':          'Warranty Tracker',
+    'new-orders':        'New Orders',
+    'completed-orders':  'Completed Orders',
+    'open-quotes':       'Open Quotes',
+    'won-quotes':        'Won Quotes',
+    'search':            'Serial Number Search'
+  };
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
+
+  clearSearchInput();
+  loadTab(tab);
+}
+
+async function loadTab(tab) {
+  const area = document.getElementById('contentArea');
+  area.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+
+  try {
+    if (tab === 'calendar') {
+      await loadCalendar();
+    } else if (tab === 'upcoming') {
+      const data = await apiFetch({ mode: 'upcoming' });
+      renderItemTable(data, 'Upcoming Deliveries — next 90 days', true, false);
+    } else if (tab === 'overdue') {
+      const data = await apiFetch({ mode: 'overdue' });
+      renderItemTable(data, 'Overdue — past delivery date, not shipped', true, false);
+    } else if (tab === 'unshipped') {
+      const data = await apiFetch({ mode: 'unshipped' });
+      renderItemTable(data, 'Unshipped items with delivery dates', true, false);
+    } else if (tab === 'shipped') {
+      const data = await apiFetch({ mode: 'shipped' });
+      renderItemTable(data, 'Shipped items', true, false);
+    } else if (tab === 'warranty') {
+      const data = await apiFetch({ mode: 'warranty' });
+      renderWarrantyTable(data);
+    } else if (tab === 'new-orders') {
+      const data = await apiFetch({ mode: 'list', docType: 'ORDER', status: 'New Order' });
+      renderDocTable(data, 'New Orders');
+    } else if (tab === 'completed-orders') {
+      const data = await apiFetch({ mode: 'list', docType: 'ORDER', status: 'Completed Order' });
+      renderDocTable(data, 'Completed Orders');
+    } else if (tab === 'open-quotes') {
+      const data = await apiFetch({ mode: 'list', docType: 'QUOTE', status: 'Open' });
+      renderDocTable(data, 'Open Quotes');
+    } else if (tab === 'won-quotes') {
+      const data = await apiFetch({ mode: 'list', docType: 'QUOTE', status: 'Won' });
+      renderDocTable(data, 'Won Quotes');
+    }
+  } catch (e) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">Error: ${e.message}</div></div>`;
+  }
+}
+
+function refreshCurrent() {
+  loadTab(currentTab);
+  loadStats();
+}
+
+// ── Calendar ───────────────────────────────────────────────────────────────
+async function loadCalendar() {
+  calData = await apiFetch({ mode: 'calendar', month: calMonth, year: calYear });
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const area  = document.getElementById('contentArea');
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now    = new Date();
+
+  // Group items by day
+  const byDay = {};
+  calData.forEach(item => {
+    const d   = new Date(item.DeliveryDate);
+    const key = d.getDate();
+    if (!byDay[key]) byDay[key] = [];
+    byDay[key].push(item);
+  });
+
+  // Build grid
+  const firstDay = new Date(calYear, calMonth - 1, 1).getDay();
+  const offset   = firstDay === 0 ? 6 : firstDay - 1;
+  const daysInMonth = new Date(calYear, calMonth, 0).getDate();
+  const prevDays    = new Date(calYear, calMonth - 1, 0).getDate();
+
+  let cells = '';
+
+  // Prev month fill
+  for (let i = offset - 1; i >= 0; i--) {
+    cells += `<div class="cal-day other-month"><div class="cal-day-num">${prevDays - i}</div></div>`;
+  }
+
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = now.getDate() === d && now.getMonth() + 1 === calMonth && now.getFullYear() === calYear;
+    const items   = byDay[d] || [];
+    const shipped   = items.filter(i => i.ShippedStatus && i.ShippedStatus.toLowerCase().includes('shipped')).length;
+    const unshipped = items.filter(i => !i.ShippedStatus || !i.ShippedStatus.toLowerCase().includes('shipped')).length;
+    const isPast    = new Date(calYear, calMonth - 1, d) < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    let dots = '';
+    for (let s = 0; s < Math.min(shipped, 8); s++)   dots += `<div class="cal-dot shipped" title="Shipped"></div>`;
+    for (let u = 0; u < Math.min(unshipped, 8); u++) dots += `<div class="cal-dot ${isPast && unshipped ? 'overdue' : 'unshipped'}" title="${isPast ? 'Overdue' : 'Pending'}"></div>`;
+
+    cells += `
+      <div class="cal-day${isToday ? ' today' : ''}${items.length ? ' has-items' : ''}"
+           ${items.length ? `onclick="showDayItems(${d})"` : ''}>
+        <div class="cal-day-num">${d}</div>
+        <div class="cal-dots">${dots}</div>
+        ${items.length > 4 ? `<div class="cal-count">${items.length}</div>` : ''}
+      </div>`;
+  }
+
+  // Next month fill
+  const total = offset + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= remaining; d++) {
+    cells += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
+  }
+
+  const legend = `
+    <div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto">
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Shipped</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--amber);display:inline-block"></span>Pending</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red);display:inline-block"></span>Overdue</span>
+    </div>`;
+
+  area.innerHTML = `
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="calNav(-1)">◀</button>
+      <div class="cal-month-title">${months[calMonth - 1]} ${calYear}</div>
+      <button class="cal-nav-btn" onclick="calNav(1)">▶</button>
+      <button class="cal-nav-btn" onclick="calToday()" title="Today" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">Today</button>
+      ${legend}
+    </div>
+    <div class="cal-grid">
+      <div class="cal-day-header">Mon</div>
+      <div class="cal-day-header">Tue</div>
+      <div class="cal-day-header">Wed</div>
+      <div class="cal-day-header">Thu</div>
+      <div class="cal-day-header">Fri</div>
+      <div class="cal-day-header">Sat</div>
+      <div class="cal-day-header">Sun</div>
+      ${cells}
+    </div>`;
+}
+
+function calNav(dir) {
+  calMonth += dir;
+  if (calMonth > 12) { calMonth = 1;  calYear++; }
+  if (calMonth < 1)  { calMonth = 12; calYear--; }
+  loadCalendar();
+}
+
+function calToday() {
+  calMonth = new Date().getMonth() + 1;
+  calYear  = new Date().getFullYear();
+  loadCalendar();
+}
+
+function showDayItems(day) {
+  const items = calData.filter(i => new Date(i.DeliveryDate).getDate() === day);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dayModalTitle').textContent =
+    `${day} ${months[calMonth - 1]} ${calYear} — ${items.length} item${items.length !== 1 ? 's' : ''}`;
+
+  document.getElementById('dayModalBody').innerHTML = items.map(i => `
+    <div class="day-item-row" onclick="showDetail(${i.ItemID})">
+      <div>
+        <div class="di-desc">${i.Description || '—'}</div>
+        <div class="di-sub">${i.DocNo} · ${i.SoldToCompany || '—'} · ${i.SalesRep || '—'}</div>
+        ${i.SerialNumber ? `<div class="di-serial">S/N: ${i.SerialNumber}</div>` : ''}
+      </div>
+      <div>${shippedPill(i.ShippedStatus)}</div>
+    </div>`).join('');
+
+  document.getElementById('dayModalOverlay').classList.add('open');
+}
+
+function closeDayModal(e) {
+  if (!e || e.target === document.getElementById('dayModalOverlay')) {
+    document.getElementById('dayModalOverlay').classList.remove('open');
+  }
+}
+
+// ── Item table ─────────────────────────────────────────────────────────────
+function renderItemTable(data, title, showDelivery, isWarranty) {
+  const area = document.getElementById('contentArea');
+  if (!data.length) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No items found</div></div>`;
+    return;
+  }
+
+  const rows = data.map(i => {
+    const days = showDelivery ? i.DeliveryDays : i.WarrantyDays;
+    const date = showDelivery ? i.DeliveryDate : i.WarrantyExpiry;
+    return `
+      <tr onclick="showDetail(${i.ItemID})">
+        <td class="td-docno">${i.DocNo || '—'}</td>
+        <td class="td-desc">${i.Description || '—'}</td>
+        <td class="td-company">${i.SoldToCompany || '—'}</td>
+        <td class="td-serial">${i.SerialNumber || '—'}</td>
+        <td>${shippedPill(i.ShippedStatus)}</td>
+        <td class="td-date">${fmtShort(date)}</td>
+        <td class="td-days ${daysClass(days)}">${daysLabel(days)}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep || '—'}</td>
+      </tr>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div class="section-header">
+      <div class="section-title">${title}</div>
+      <div class="section-count">${data.length} items</div>
+    </div>
+    <table class="item-table">
+      <thead>
+        <tr>
+          <th>Doc No</th>
+          <th>Description</th>
+          <th>Company</th>
+          <th>Serial No</th>
+          <th>Status</th>
+          <th>${showDelivery ? 'Delivery' : 'Warranty'}</th>
+          <th>Days</th>
+          <th>Rep</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function renderWarrantyTable(data) {
+  const area = document.getElementById('contentArea');
+  if (!data.length) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">🛡</div><div class="empty-text">No warranty items found</div></div>`;
+    return;
+  }
+
+  const rows = data.map(i => {
+    const wDays = i.WarrantyDays;
+    let wClass  = 'days-ok';
+    let wLabel  = daysLabel(wDays);
+    if (wDays < 0)   wClass = 'days-past';
+    if (wDays <= 30 && wDays >= 0) wClass = 'days-soon';
+    if (wDays < 0)   wLabel = 'Expired ' + Math.abs(wDays) + 'd ago';
+
+    return `
+      <tr onclick="showDetail(${i.ItemID})">
+        <td class="td-docno">${i.DocNo || '—'}</td>
+        <td class="td-desc">${i.Description || '—'}</td>
+        <td class="td-company">${i.SoldToCompany || '—'}</td>
+        <td class="td-serial">${i.SerialNumber || '—'}</td>
+        <td class="td-date">${fmtShort(i.WarrantyExpiry)}</td>
+        <td class="td-days ${wClass}">${wLabel}</td>
+        <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep || '—'}</td>
+      </tr>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div class="section-header">
+      <div class="section-title">Warranty Tracker</div>
+      <div class="section-count">${data.length} items</div>
+    </div>
+    <table class="item-table">
+      <thead>
+        <tr>
+          <th>Doc No</th>
+          <th>Description</th>
+          <th>Company</th>
+          <th>Serial No</th>
+          <th>Warranty Date</th>
+          <th>Status</th>
+          <th>Delivered</th>
+          <th>Rep</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Doc table ──────────────────────────────────────────────────────────────
+function renderDocTable(data, title) {
+  const area = document.getElementById('contentArea');
+  if (!data.length) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No documents found</div></div>`;
+    return;
+  }
+
+  const rows = data.map(d => {
+    const shipped = d.ShippedCount || 0;
+    const total   = d.ItemCount    || 0;
+    const pct     = total > 0 ? Math.round((shipped / total) * 100) : 0;
+
+    return `
+      <tr onclick="showDocItems(${d.ID}, '${(d.DocNo||'').replace(/'/g,"\\'")}')">
+        <td class="td-docno">${d.DocNo || '—'}</td>
+        <td class="td-desc">${d.DocName || '—'}</td>
+        <td class="td-company">${d.SoldToCompany || '—'}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${d.SalesRep || '—'}</td>
+        <td class="td-date">${fmtShort(d.DocDate)}</td>
+        <td style="font-family:var(--mono);font-size:0.75rem;color:var(--green)">${fmt(d.GrandTotal)}</td>
+        <td>
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--dim);margin-bottom:3px">${shipped}/${total} shipped</div>
+          <div class="progress-bar" style="width:80px">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>
+        </td>
+        <td class="td-date">${d.EarliestDelivery ? fmtShort(d.EarliestDelivery) : '—'}</td>
+      </tr>`;
+  }).join('');
+
+  area.innerHTML = `
+    <div class="section-header">
+      <div class="section-title">${title}</div>
+      <div class="section-count">${data.length} documents</div>
+    </div>
+    <table class="doc-table">
+      <thead>
+        <tr>
+          <th>Doc No</th>
+          <th>Name</th>
+          <th>Company</th>
+          <th>Rep</th>
+          <th>Date</th>
+          <th>Value</th>
+          <th>Shipping</th>
+          <th>Delivery</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ── Detail panel ───────────────────────────────────────────────────────────
+async function showDetail(itemId) {
+  document.getElementById('panelOverlay').classList.add('open');
+  document.getElementById('pDocNo').textContent   = 'Loading…';
+  document.getElementById('pDesc').textContent    = '';
+  document.getElementById('pCompany').textContent = '';
+  document.getElementById('panelBody').innerHTML  = '<div class="loader"><div class="spinner"></div></div>';
+
+  try {
+    const d = await apiFetch({ mode: 'detail', itemId });
+    if (!d) throw new Error('Item not found');
+
+    document.getElementById('pDocNo').textContent   = d.DocNo + (d.DocType ? ' · ' + d.DocType : '');
+    document.getElementById('pDesc').textContent    = d.Description || '—';
+    document.getElementById('pCompany').textContent = d.SoldToCompany || '—';
+
+    const wDays = d.WarrantyDays;
+    const wClass = wDays === null ? '' : wDays < 0 ? 'red' : wDays <= 30 ? 'amber' : 'green';
+    const wLabel = wDays === null ? '—' : wDays < 0 ? 'Expired ' + Math.abs(wDays) + 'd ago' : daysLabel(wDays);
+
+    const dDays  = d.DeliveryDays;
+    const dClass = dDays === null ? '' : dDays < 0 ? 'red' : dDays <= 7 ? 'amber' : 'green';
+
+    document.getElementById('panelBody').innerHTML = `
+
+      <!-- Serial Number - hero element -->
+      <div class="serial-hero">
+        <div class="serial-label">Serial Number</div>
+        ${d.SerialNumber
+          ? `<div class="serial-value">${d.SerialNumber}</div>`
+          : `<div class="serial-empty">Not recorded</div>`}
+      </div>
+
+      <!-- Item details -->
+      <div class="panel-section-title">Item Details</div>
+      <div class="detail-grid">
+        <div class="detail-cell full">
+          <div class="dc-label">Description</div>
+          <div class="dc-val">${d.Description || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Manufacturer</div>
+          <div class="dc-val">${d.Manufacturer || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Part Number</div>
+          <div class="dc-val mono">${d.ManufacturerPartNumber || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Qty</div>
+          <div class="dc-val">${d.QtyTotal || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Unit Price</div>
+          <div class="dc-val green">${fmt(d.UnitPrice)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Unit Cost</div>
+          <div class="dc-val mono">${fmt(d.UnitCost)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Extended Price</div>
+          <div class="dc-val green">${fmt(d.ExtendedPrice)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Shipped Status</div>
+          <div class="dc-val">${shippedPill(d.ShippedStatus)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Category</div>
+          <div class="dc-val">${d.Category || '—'}</div>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="panel-section-title">Dates</div>
+      <div class="detail-grid">
+        <div class="detail-cell">
+          <div class="dc-label">Delivery Date</div>
+          <div class="dc-val ${dClass}">${fmtDate(d.DeliveryDate)}</div>
+          ${dDays !== null ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px;font-family:var(--mono)">${daysLabel(dDays)}</div>` : ''}
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Warranty Expiry</div>
+          <div class="dc-val ${wClass}">${fmtDate(d.WarrantyExpiry)}</div>
+          ${wDays !== null ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px;font-family:var(--mono)">${wLabel}</div>` : ''}
+        </div>
+      </div>
+
+      <!-- Document header -->
+      <div class="panel-section-title">Document</div>
+      <div class="detail-grid">
+        <div class="detail-cell">
+          <div class="dc-label">Doc No</div>
+          <div class="dc-val blue">${d.DocNo || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Doc Date</div>
+          <div class="dc-val mono">${fmtDate(d.DocDate)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Type</div>
+          <div class="dc-val">${d.DocType || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Status</div>
+          <div class="dc-val">${d.DocStatus || '—'}</div>
+        </div>
+        <div class="detail-cell full">
+          <div class="dc-label">Doc Name</div>
+          <div class="dc-val">${d.DocName || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Total Value</div>
+          <div class="dc-val green">${fmt(d.GrandTotal)}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Sales Rep</div>
+          <div class="dc-val">${d.SalesRep || '—'}</div>
+        </div>
+      </div>
+
+      <!-- Customer -->
+      <div class="panel-section-title">Customer</div>
+      <div class="detail-grid">
+        <div class="detail-cell">
+          <div class="dc-label">Company</div>
+          <div class="dc-val">${d.SoldToCompany || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Contact</div>
+          <div class="dc-val">${d.SoldToContact || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Phone</div>
+          <div class="dc-val mono">${d.SoldToPhone || '—'}</div>
+        </div>
+        <div class="detail-cell">
+          <div class="dc-label">Email</div>
+          <div class="dc-val" style="font-size:0.72rem;word-break:break-all">${d.SoldToEmail || '—'}</div>
+        </div>
+        ${d.SoldToAddress1 ? `
+        <div class="detail-cell full">
+          <div class="dc-label">Address</div>
+          <div class="dc-val">${[d.SoldToAddress1, d.SoldToCity, d.SoldToPostalCode].filter(Boolean).join(', ')}</div>
+        </div>` : ''}
+      </div>
+
+      ${d.Notes ? `
+        <div class="panel-section-title">Item Notes</div>
+        <div class="detail-cell" style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:0.78rem;color:var(--dim);line-height:1.6">
+          ${d.Notes}
+        </div>` : ''}
+    `;
+
+  } catch (e) {
+    document.getElementById('panelBody').innerHTML =
+      `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">${e.message}</div></div>`;
+  }
+}
+
+async function showDocItems(docId, docNo) {
+  // Show all items for a document in the day modal
+  document.getElementById('dayModalTitle').textContent = `Items — ${docNo}`;
+  document.getElementById('dayModalBody').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+  document.getElementById('dayModalOverlay').classList.add('open');
+
+  try {
+    const data = await apiFetch({ mode: 'list', docType: '', status: '' });
+    // Actually fetch full detail items for this doc via search
+    // Use a different approach - show items from the list
+    document.getElementById('dayModalBody').innerHTML = `
+      <div style="padding:16px 18px;font-size:0.8rem;color:var(--dim)">
+        Click an item below to see full details.
+      </div>`;
+  } catch (e) {
+    document.getElementById('dayModalBody').innerHTML =
+      `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">${e.message}</div></div>`;
+  }
+}
+
+function closePanel(e) {
+  if (!e || e.target === document.getElementById('panelOverlay')) {
+    document.getElementById('panelOverlay').classList.remove('open');
+  }
+}
+
+// ── Serial search ──────────────────────────────────────────────────────────
+function handleSerialSearch(val) {
+  const clear = document.getElementById('searchClear');
+  clear.classList.toggle('visible', val.length > 0);
+
+  clearTimeout(searchTimeout);
+  if (val.trim().length < 2) return;
+
+  searchTimeout = setTimeout(() => runSerialSearch(val.trim()), 400);
+}
+
+async function runSerialSearch(serial) {
+  currentTab = 'search';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pageTitle').textContent = 'Serial Number Search';
+
+  const area = document.getElementById('contentArea');
+  area.innerHTML = '<div class="loader"><div class="spinner"></div></div>';
+
+  try {
+    const data = await apiFetch({ mode: 'search', serial });
+
+    if (!data.length) {
+      area.innerHTML = `
+        <div class="search-bar-notice">Searching for: "${serial}"</div>
+        <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No items found matching "${serial}"</div></div>`;
+      return;
+    }
+
+    const rows = data.map(i => `
+      <tr onclick="showDetail(${i.ItemID})">
+        <td class="td-serial" style="font-size:0.8rem;font-weight:500;color:var(--cyan)">${i.SerialNumber || '—'}</td>
+        <td class="td-docno">${i.DocNo || '—'}</td>
+        <td class="td-desc">${i.Description || '—'}</td>
+        <td class="td-company">${i.SoldToCompany || '—'}</td>
+        <td>${shippedPill(i.ShippedStatus)}</td>
+        <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
+        <td class="td-date">${fmtShort(i.WarrantyExpiry)}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.DocType || '—'}</td>
+      </tr>`).join('');
+
+    area.innerHTML = `
+      <div class="search-bar-notice">Showing ${data.length} result${data.length !== 1 ? 's' : ''} for serial: "${serial}"</div>
+      <table class="item-table">
+        <thead>
+          <tr>
+            <th>Serial No</th>
+            <th>Doc No</th>
+            <th>Description</th>
+            <th>Company</th>
+            <th>Shipped</th>
+            <th>Delivery</th>
+            <th>Warranty</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } catch (e) {
+    area.innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">Search error: ${e.message}</div></div>`;
+  }
+}
+
+function clearSearch() {
+  document.getElementById('serialSearch').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  const btn = document.querySelector(`[data-tab="${currentTab === 'search' ? 'calendar' : currentTab}"]`);
+  if (currentTab === 'search') switchTab(document.querySelector('[data-tab="calendar"]'), 'calendar');
+}
+
+function clearSearchInput() {
+  document.getElementById('serialSearch').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+}
+
+// ── Keyboard ──────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePanel();
+    closeDayModal();
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    document.getElementById('serialSearch').focus();
+  }
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadStats();
+loadTab('calendar');
+</script>
 </body>
 </html>
