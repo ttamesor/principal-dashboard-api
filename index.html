@@ -1383,26 +1383,28 @@ async function loadStats() {
   }
 }
 
+function updateStatBadge(id, count) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = count;
+}
+
 async function loadDeliveryStats() {
-  try {
-    const [upcoming, overdue, unshipped, shipped] = await Promise.all([
-      apiFetch({ mode: 'upcoming' }),
-      apiFetch({ mode: 'overdue' }),
-      apiFetch({ mode: 'unshipped' }),
-      apiFetch({ mode: 'shipped' })
-    ]);
+  const delay = ms => new Promise(r => setTimeout(r, ms));
 
-    document.getElementById('stat-upcoming').textContent  = upcoming.length;
-    document.getElementById('stat-overdue').textContent   = overdue.length;
-    document.getElementById('stat-unshipped').textContent = unshipped.length;
+  const fetchStat = async (mode, statId, delayMs) => {
+    await delay(delayMs);
+    try {
+      const data = await apiFetch({ mode });
+      updateStatBadge(statId, data.length);
+    } catch (_) {}
+  };
 
+  fetchStat('upcoming',  'stat-upcoming',  2000);
+  fetchStat('overdue',   'stat-overdue',   4000);
+  fetchStat('unshipped', 'stat-unshipped', 6000);
 
-    document.getElementById('lastUpdated').textContent =
-      'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-
-  } catch (e) {
-    console.error('Delivery stats error:', e);
-  }
+  document.getElementById('lastUpdated').textContent =
+    'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
 }
 
 // ── Tab switching ──────────────────────────────────────────────────────────
