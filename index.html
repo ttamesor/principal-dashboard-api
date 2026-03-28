@@ -120,12 +120,21 @@ body::before {
 }
 
 .nav-section-label {
-  font-size: 0.6rem;
-  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-family: var(--sans);
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  padding: 10px 8px 5px;
+  letter-spacing: 1px;
+  color: var(--text);
+  padding: 14px 8px 5px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.nav-section-label:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 6px;
 }
 
 .nav-btn {
@@ -137,10 +146,10 @@ body::before {
   border-radius: 7px;
   border: none;
   background: transparent;
-  color: var(--dim);
+  color: #8a9ab8;
   cursor: pointer;
   font-family: var(--sans);
-  font-size: 0.82rem;
+  font-size: 0.86rem;
   font-weight: 500;
   transition: all 0.12s;
   text-align: left;
@@ -387,20 +396,22 @@ body::before {
 .stat-cell.c-purple::after{ background: linear-gradient(90deg, var(--purple), transparent); }
 
 .stat-label {
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--muted);
+  color: var(--dim);
   margin-bottom: 7px;
+  font-weight: 600;
 }
 
 .stat-val {
   font-family: var(--mono);
-  font-size: 1.35rem;
-  font-weight: 500;
+  font-size: 1.45rem;
+  font-weight: 700;
   letter-spacing: -0.5px;
   line-height: 1;
+  color: #ffffff;
 }
 
 .stat-cell.c-blue .stat-val  { color: var(--blue); }
@@ -411,8 +422,8 @@ body::before {
 .stat-cell.c-purple .stat-val{ color: var(--purple); }
 
 .stat-sub {
-  font-size: 0.68rem;
-  color: var(--muted);
+  font-size: 0.7rem;
+  color: var(--dim);
   margin-top: 4px;
 }
 
@@ -830,13 +841,12 @@ body::before {
 .detail-cell.full { grid-column: 1 / -1; }
 
 .dc-label {
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-family: var(--mono);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: white;
+  color: var(--muted);
   margin-bottom: 4px;
-  font-weight: bold;
 }
 
 .dc-val {
@@ -953,6 +963,135 @@ body::before {
 .di-sub  { font-size: 0.72rem; color: var(--dim); }
 .di-serial { font-family: var(--mono); font-size: 0.68rem; color: var(--cyan); margin-top: 2px; }
 
+/* ── WEEK VIEW ── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  height: calc(100vh - 220px);
+}
+
+.week-col {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.week-col.week-today {
+  border-color: var(--blue);
+  background: rgba(59,130,246,0.05);
+}
+
+.week-day-header {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.week-day-name {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.week-day-num {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--dim);
+}
+
+.week-today-num {
+  color: var(--blue);
+  background: rgba(59,130,246,0.15);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+}
+
+.week-day-count {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--muted);
+  background: var(--bg4);
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+.week-col.week-today .week-day-count {
+  background: rgba(59,130,246,0.2);
+  color: var(--blue);
+}
+
+.week-day-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.week-day-body::-webkit-scrollbar { width: 3px; }
+.week-day-body::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.week-item {
+  background: var(--bg3);
+  border-radius: 6px;
+  padding: 7px 9px;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-left: 3px solid var(--border2);
+}
+
+.week-item:hover { background: var(--bg4); }
+
+.week-item-desc {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.week-item-sub {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.week-item-serial {
+  font-size: 0.65rem;
+  font-family: var(--mono);
+  color: var(--cyan);
+  margin-top: 2px;
+}
+
+.week-empty {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 16px 8px;
+  font-family: var(--mono);
+}
+
 /* ── DOC LIST TABLE ── */
 .doc-table { width: 100%; border-collapse: collapse; }
 
@@ -1035,7 +1174,6 @@ body::before {
         
       </button>
 
-      <div class="nav-section-label">Warranty</div>
         
       </button>
 
@@ -1164,8 +1302,10 @@ let currentTab    = 'calendar';
 let calYear       = new Date().getFullYear();
 let calMonth      = new Date().getMonth() + 1;
 let calData       = [];
+let calView       = 'week'; // 'week' or 'month'
 let searchTimeout = null;
 let statsCache    = null;
+const calCache    = {}; // keyed by 'YYYY-M'
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 function fmt(v)     { return parseFloat(v || 0).toLocaleString('en-GB', { style:'currency', currency:'GBP', maximumFractionDigits:0 }); }
@@ -1298,16 +1438,16 @@ async function loadTab(tab) {
       await loadCalendar();
     } else if (tab === 'upcoming') {
       const data = await apiFetch({ mode: 'upcoming' });
-      renderItemTable(data, 'Upcoming Deliveries — next 90 days', true, false);
+      renderItemTable(data, 'Upcoming Deliveries — next 90 days');
     } else if (tab === 'overdue') {
       const data = await apiFetch({ mode: 'overdue' });
-      renderItemTable(data, 'Overdue — past delivery date, not shipped', true, false);
+      renderItemTable(data, 'Overdue — past delivery date, not shipped');
     } else if (tab === 'unshipped') {
       const data = await apiFetch({ mode: 'unshipped' });
-      renderItemTable(data, 'Unshipped items with delivery dates', true, false);
+      renderItemTable(data, 'Unshipped items with delivery dates');
     } else if (tab === 'shipped') {
       const data = await apiFetch({ mode: 'shipped' });
-      renderItemTable(data, 'Shipped items', true, false);
+      renderItemTable(data, 'Shipped items');
     } else if (tab === 'new-orders') {
       const data = await apiFetch({ mode: 'list', docType: 'ORDER', status: 'New Order' });
       renderDocTable(data, 'New Orders');
@@ -1333,8 +1473,68 @@ function refreshCurrent() {
 
 // ── Calendar ───────────────────────────────────────────────────────────────
 async function loadCalendar() {
-  calData = await apiFetch({ mode: 'calendar', month: calMonth, year: calYear });
-  renderCalendar();
+  const key = calYear + '-' + calMonth;
+  if (calCache[key]) {
+    calData = calCache[key];
+  } else {
+    calData = await apiFetch({ mode: 'calendar', month: calMonth, year: calYear });
+    calCache[key] = calData;
+  }
+  if (calView === 'week') renderWeekView();
+  else renderCalendar();
+
+  // Once rendered, silently prefetch adjacent months during idle time
+  scheduleIdlePrefetch();
+}
+
+function adjacentMonths() {
+  const result = [];
+  for (let offset of [-1, 1, 2, -2]) {
+    let m = calMonth + offset;
+    let y = calYear;
+    while (m > 12) { m -= 12; y++; }
+    while (m < 1)  { m += 12; y--; }
+    const key = y + '-' + m;
+    if (!calCache[key]) result.push({ m, y, key });
+  }
+  return result;
+}
+
+function scheduleIdlePrefetch() {
+  const toFetch = adjacentMonths();
+  if (!toFetch.length) return;
+
+  const fetchOne = (index) => {
+    if (index >= toFetch.length) return;
+    const { m, y, key } = toFetch[index];
+
+    const task = async () => {
+      // Double-check it hasn't been loaded since we scheduled this
+      if (calCache[key]) { fetchOne(index + 1); return; }
+      try {
+        calCache[key] = await apiFetch({ mode: 'calendar', month: m, year: y });
+      } catch (_) {
+        // Silent fail - prefetch is best effort
+      }
+      // Schedule next one after a short gap so we don't hammer the API
+      setTimeout(() => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => fetchOne(index + 1), { timeout: 10000 });
+        } else {
+          setTimeout(() => fetchOne(index + 1), 2000);
+        }
+      }, 500);
+    };
+
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(task, { timeout: 10000 });
+    } else {
+      // Fallback for Safari
+      setTimeout(task, 2000);
+    }
+  };
+
+  fetchOne(0);
 }
 
 function renderCalendar() {
@@ -1392,20 +1592,14 @@ function renderCalendar() {
     cells += `<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
   }
 
-  const legend = `
-    <div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto">
-      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Shipped</span>
-      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--amber);display:inline-block"></span>Pending</span>
-      <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red);display:inline-block"></span>Overdue</span>
-    </div>`;
-
   area.innerHTML = `
     <div class="cal-nav">
       <button class="cal-nav-btn" onclick="calNav(-1)">◀</button>
       <div class="cal-month-title">${months[calMonth - 1]} ${calYear}</div>
       <button class="cal-nav-btn" onclick="calNav(1)">▶</button>
       <button class="cal-nav-btn" onclick="calToday()" title="Today" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">Today</button>
-      ${legend}
+      <button class="cal-nav-btn" id="calViewToggle" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono);margin-left:8px">📆 Week view</button>
+      ${legendHtml()}
     </div>
     <div class="cal-grid">
       <div class="cal-day-header">Mon</div>
@@ -1419,18 +1613,149 @@ function renderCalendar() {
     </div>`;
 }
 
-function calNav(dir) {
-  calMonth += dir;
-  if (calMonth > 12) { calMonth = 1;  calYear++; }
-  if (calMonth < 1)  { calMonth = 12; calYear--; }
+function toggleCalView() {
+  calView = calView === 'week' ? 'month' : 'week';
+  const btn = document.getElementById('calViewToggle');
+  if (btn) btn.textContent = calView === 'week' ? '📅 Month view' : '📆 Week view';
   loadCalendar();
 }
 
+function renderWeekView() {
+  const area    = document.getElementById('contentArea');
+  const months  = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now     = new Date();
+
+  // Build week days Mon-Sun starting from calWeekStart
+  const weekStart = new Date(calYear, calMonth - 1, calWeekStart);
+  // Ensure it's actually Monday
+  const fixedStart = getWeekStart(weekStart);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(fixedStart);
+    d.setDate(fixedStart.getDate() + i);
+    days.push(d);
+  }
+
+  const weekLabel = days[0].toLocaleDateString('en-GB', { day:'numeric', month:'short' })
+    + ' – ' + days[6].toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+
+  // Group calData by date string
+  const byDate = {};
+  calData.forEach(item => {
+    const d   = new Date(item.DeliveryDate);
+    const key = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+    if (!byDate[key]) byDate[key] = [];
+    byDate[key].push(item);
+  });
+
+  // Also check adjacent months if week spans month boundary
+  const extraMonths = [];
+  days.forEach(d => {
+    const m = d.getMonth() + 1;
+    const y = d.getFullYear();
+    if ((m !== calMonth || y !== calYear) && !extraMonths.find(e => e.m === m && e.y === y)) {
+      extraMonths.push({ m, y });
+    }
+  });
+
+  const loadExtras = extraMonths.map(async ({ m, y }) => {
+    const key = y + '-' + m;
+    if (!calCache[key]) {
+      calCache[key] = await apiFetch({ mode: 'calendar', month: m, year: y });
+    }
+    calCache[key].forEach(item => {
+      const d   = new Date(item.DeliveryDate);
+      const k   = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+      if (!byDate[k]) byDate[k] = [];
+      if (!byDate[k].find(x => x.ItemID === item.ItemID)) byDate[k].push(item);
+    });
+  });
+
+  Promise.all(loadExtras).then(() => {
+    const dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const cols = days.map((d, idx) => {
+      const key      = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+      const items    = byDate[key] || [];
+      const isToday  = d.toDateString() === now.toDateString();
+      const isPast   = d < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      const itemRows = items.map(i => {
+        const shipped = i.ShippedStatus && i.ShippedStatus.toLowerCase().includes('shipped');
+        const color   = shipped ? 'var(--green)' : isPast ? 'var(--red)' : 'var(--amber)';
+        return `<div class="week-item" onclick="closeDayModal();showDetail(${i.ItemID})" style="border-left:3px solid ${color}">
+          <div class="week-item-desc">${i.Description || '—'}</div>
+          <div class="week-item-sub">${i.DocNo || ''} · ${i.SoldToCompany || ''}</div>
+          ${i.SerialNumber ? `<div class="week-item-serial">S/N: ${i.SerialNumber}</div>` : ''}
+          <div style="margin-top:4px">${shippedPill(i.ShippedStatus)}</div>
+        </div>`;
+      }).join('') || `<div class="week-empty">No deliveries</div>`;
+
+      return `
+        <div class="week-col${isToday ? ' week-today' : ''}">
+          <div class="week-day-header">
+            <div class="week-day-name">${dayNames[idx]}</div>
+            <div class="week-day-num${isToday ? ' week-today-num' : ''}">${d.getDate()}</div>
+            ${items.length ? `<div class="week-day-count">${items.length}</div>` : ''}
+          </div>
+          <div class="week-day-body">${itemRows}</div>
+        </div>`;
+    }).join('');
+
+    area.innerHTML = `
+      <div class="cal-nav" style="margin-bottom:12px">
+        <button class="cal-nav-btn" onclick="calNav(-1)">◀</button>
+        <div class="cal-month-title">${weekLabel}</div>
+        <button class="cal-nav-btn" onclick="calNav(1)">▶</button>
+        <button class="cal-nav-btn" onclick="calToday()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">Today</button>
+        <button class="cal-nav-btn" id="calViewToggle" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono);margin-left:8px">📅 Month view</button>
+        ${legendHtml()}
+      </div>
+      <div class="week-grid">${cols}</div>`;
+  });
+}
+
+function legendHtml() {
+  return `<div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto">
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Shipped</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--amber);display:inline-block"></span>Pending</span>
+    <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red);display:inline-block"></span>Overdue</span>
+  </div>`;
+}
+
+function calNav(dir) {
+  if (calView === 'week') {
+    // Navigate by week
+    const d = new Date(calYear, calMonth - 1, calWeekStart);
+    d.setDate(d.getDate() + dir * 7);
+    calYear  = d.getFullYear();
+    calMonth = d.getMonth() + 1;
+    calWeekStart = d.getDate();
+    loadCalendar();
+  } else {
+    calMonth += dir;
+    if (calMonth > 12) { calMonth = 1;  calYear++; }
+    if (calMonth < 1)  { calMonth = 12; calYear--; }
+    loadCalendar();
+  }
+}
+
 function calToday() {
-  calMonth = new Date().getMonth() + 1;
-  calYear  = new Date().getFullYear();
+  const now    = new Date();
+  calMonth     = now.getMonth() + 1;
+  calYear      = now.getFullYear();
+  calWeekStart = getWeekStart(now).getDate();
   loadCalendar();
 }
+
+function getWeekStart(date) {
+  const d   = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+let calWeekStart = getWeekStart(new Date()).getDate();
 
 function showDayItems(day) {
   const items = calData.filter(i => new Date(i.DeliveryDate).getDate() === day);
@@ -1458,7 +1783,7 @@ function closeDayModal(e) {
 }
 
 // ── Item table ─────────────────────────────────────────────────────────────
-function renderItemTable(data, title, showDelivery, isWarranty) {
+function renderItemTable(data, title) {
   const area = document.getElementById('contentArea');
   if (!data.length) {
     area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No items found</div></div>`;
@@ -1494,7 +1819,7 @@ function renderItemTable(data, title, showDelivery, isWarranty) {
           <th>Company</th>
           <th>Serial No</th>
           <th>Status</th>
-          <th>${showDelivery ? 'Delivery' : 'Warranty'}</th>
+          <th>Delivery</th>
           <th>Days</th>
           <th>Rep</th>
         </tr>
