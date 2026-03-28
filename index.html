@@ -581,10 +581,11 @@ body::before {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 7px;
+  padding: 3px 9px;
   border-radius: 20px;
-  font-size: 0.62rem;
+  font-size: 0.75rem;
   font-family: var(--mono);
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -685,10 +686,11 @@ body::before {
 }
 
 .panel-desc {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 800;
   letter-spacing: -0.3px;
   line-height: 1.3;
+  color: #ffffff;
 }
 
 .panel-company {
@@ -783,8 +785,9 @@ body::before {
 }
 
 .dc-val {
-  font-size: 0.82rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
   line-height: 1.4;
 }
 
@@ -960,41 +963,45 @@ body::before {
       </button>
       <button class="nav-btn amber" data-tab="upcoming" onclick="switchTab(this,'upcoming')">
         <span class="nav-icon">🚚</span> Upcoming
-        <span class="nav-badge" id="badge-upcoming">-</span>
+        
       </button>
       <button class="nav-btn danger" data-tab="overdue" onclick="switchTab(this,'overdue')">
         <span class="nav-icon">⚠</span> Overdue
-        <span class="nav-badge" id="badge-overdue">-</span>
+        
       </button>
 
       <div class="nav-section-label">Shipping</div>
       <button class="nav-btn" data-tab="unshipped" onclick="switchTab(this,'unshipped')">
         <span class="nav-icon">📦</span> Unshipped
-        <span class="nav-badge" id="badge-unshipped">-</span>
+        
       </button>
       <button class="nav-btn green" data-tab="shipped" onclick="switchTab(this,'shipped')">
         <span class="nav-icon">✓</span> Shipped
-        <span class="nav-badge" id="badge-shipped">-</span>
+        
       </button>
 
-           <div class="nav-section-label">Orders</div>
+      <div class="nav-section-label">Warranty</div>
+        
+      </button>
+
+      <div class="nav-section-label">Orders</div>
       <button class="nav-btn" data-tab="new-orders" onclick="switchTab(this,'new-orders')">
         <span class="nav-icon">🆕</span> New Orders
-        <span class="nav-badge" id="badge-new-orders">-</span>
+        
       </button>
       <button class="nav-btn green" data-tab="completed-orders" onclick="switchTab(this,'completed-orders')">
         <span class="nav-icon">✓</span> Completed
-        <span class="nav-badge" id="badge-completed-orders">-</span>
+        
       </button>
 
       <div class="nav-section-label">Quotes</div>
       <button class="nav-btn" data-tab="open-quotes" onclick="switchTab(this,'open-quotes')">
         <span class="nav-icon">◈</span> Open Quotes
-        <span class="nav-badge" id="badge-open-quotes">-</span>
+        
       </button>
       <button class="nav-btn green" data-tab="won-quotes" onclick="switchTab(this,'won-quotes')">
         <span class="nav-icon">★</span> Won Quotes
-        <span class="nav-badge" id="badge-won-quotes">-</span>
+        
       </button>
     </nav>
 
@@ -1160,10 +1167,6 @@ async function loadStats() {
     document.getElementById('stat-completed').textContent   = completedOrders;
     document.getElementById('stat-open-quotes').textContent = openQuotes;
 
-    document.getElementById('badge-new-orders').textContent       = newOrders;
-    document.getElementById('badge-completed-orders').textContent = completedOrders;
-    document.getElementById('badge-open-quotes').textContent      = openQuotes;
-    document.getElementById('badge-won-quotes').textContent       = wonQuotes;
 
     // Load quick counts for delivery stats
     loadDeliveryStats();
@@ -1175,22 +1178,17 @@ async function loadStats() {
 
 async function loadDeliveryStats() {
   try {
-    const [upcoming, overdue, unshipped, shipped, warranty] = await Promise.all([
+    const [upcoming, overdue, unshipped, shipped] = await Promise.all([
       apiFetch({ mode: 'upcoming' }),
       apiFetch({ mode: 'overdue' }),
       apiFetch({ mode: 'unshipped' }),
-      apiFetch({ mode: 'shipped' }),
-      ]);
+      apiFetch({ mode: 'shipped' })
+    ]);
 
     document.getElementById('stat-upcoming').textContent  = upcoming.length;
     document.getElementById('stat-overdue').textContent   = overdue.length;
     document.getElementById('stat-unshipped').textContent = unshipped.length;
 
-    document.getElementById('badge-upcoming').textContent  = upcoming.length;
-    document.getElementById('badge-overdue').textContent   = overdue.length;
-    document.getElementById('badge-unshipped').textContent = unshipped.length;
-    document.getElementById('badge-shipped').textContent   = shipped.length;
-    
 
     document.getElementById('lastUpdated').textContent =
       'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
@@ -1243,9 +1241,6 @@ async function loadTab(tab) {
     } else if (tab === 'shipped') {
       const data = await apiFetch({ mode: 'shipped' });
       renderItemTable(data, 'Shipped items', true, false);
-    } else if (tab === 'warranty') {
-      const data = await apiFetch({ mode: 'warranty' });
-      renderWarrantyTable(data);
     } else if (tab === 'new-orders') {
       const data = await apiFetch({ mode: 'list', docType: 'ORDER', status: 'New Order' });
       renderDocTable(data, 'New Orders');
@@ -1404,8 +1399,8 @@ function renderItemTable(data, title, showDelivery, isWarranty) {
   }
 
   const rows = data.map(i => {
-    const days = showDelivery ? i.DeliveryDays : i.WarrantyDays;
-    const date = showDelivery ? i.DeliveryDate : i.WarrantyExpiry;
+    const days = i.DeliveryDays;
+    const date = i.DeliveryDate;
     return `
       <tr onclick="showDetail(${i.ItemID})">
         <td class="td-docno">${i.DocNo || '—'}</td>
@@ -1441,55 +1436,6 @@ function renderItemTable(data, title, showDelivery, isWarranty) {
     </table>`;
 }
 
-function renderWarrantyTable(data) {
-  const area = document.getElementById('contentArea');
-  if (!data.length) {
-    area.innerHTML = `<div class="empty"><div class="empty-icon">🛡</div><div class="empty-text">No warranty items found</div></div>`;
-    return;
-  }
-
-  const rows = data.map(i => {
-    const wDays = i.WarrantyDays;
-    let wClass  = 'days-ok';
-    let wLabel  = daysLabel(wDays);
-    if (wDays < 0)   wClass = 'days-past';
-    if (wDays <= 30 && wDays >= 0) wClass = 'days-soon';
-    if (wDays < 0)   wLabel = 'Expired ' + Math.abs(wDays) + 'd ago';
-
-    return `
-      <tr onclick="showDetail(${i.ItemID})">
-        <td class="td-docno">${i.DocNo || '—'}</td>
-        <td class="td-desc">${i.Description || '—'}</td>
-        <td class="td-company">${i.SoldToCompany || '—'}</td>
-        <td class="td-serial">${i.SerialNumber || '—'}</td>
-        <td class="td-date">${fmtShort(i.WarrantyExpiry)}</td>
-        <td class="td-days ${wClass}">${wLabel}</td>
-        <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
-        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep || '—'}</td>
-      </tr>`;
-  }).join('');
-
-  area.innerHTML = `
-    <div class="section-header">
-      <div class="section-title">Warranty Tracker</div>
-      <div class="section-count">${data.length} items</div>
-    </div>
-    <table class="item-table">
-      <thead>
-        <tr>
-          <th>Doc No</th>
-          <th>Description</th>
-          <th>Company</th>
-          <th>Serial No</th>
-          <th>Warranty Date</th>
-          <th>Status</th>
-          <th>Delivered</th>
-          <th>Rep</th>
-        </tr>
-      </thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-}
 
 // ── Doc table ──────────────────────────────────────────────────────────────
 function renderDocTable(data, title) {
@@ -1560,10 +1506,6 @@ async function showDetail(itemId) {
     document.getElementById('pDesc').textContent    = d.Description || '—';
     document.getElementById('pCompany').textContent = d.SoldToCompany || '—';
 
-    const wDays = d.WarrantyDays;
-    const wClass = wDays === null ? '' : wDays < 0 ? 'red' : wDays <= 30 ? 'amber' : 'green';
-    const wLabel = wDays === null ? '—' : wDays < 0 ? 'Expired ' + Math.abs(wDays) + 'd ago' : daysLabel(wDays);
-
     const dDays  = d.DeliveryDays;
     const dClass = dDays === null ? '' : dDays < 0 ? 'red' : dDays <= 7 ? 'amber' : 'green';
 
@@ -1610,12 +1552,9 @@ async function showDetail(itemId) {
         </div>
         <div class="detail-cell">
           <div class="dc-label">Shipped Status</div>
-          <div class="dc-val">${shippedPill(d.ShippedStatus)}</div>
+          <div class="dc-val" style="font-size:1rem">${shippedPill(d.ShippedStatus)}</div>
         </div>
-        <div class="detail-cell">
-          <div class="dc-label">Category</div>
-          <div class="dc-val">${d.Category || '—'}</div>
-        </div>
+
       </div>
 
       <!-- Dates -->
@@ -1626,11 +1565,7 @@ async function showDetail(itemId) {
           <div class="dc-val ${dClass}">${fmtDate(d.DeliveryDate)}</div>
           ${dDays !== null ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px;font-family:var(--mono)">${daysLabel(dDays)}</div>` : ''}
         </div>
-        <div class="detail-cell">
-          <div class="dc-label">Warranty Expiry</div>
-          <div class="dc-val ${wClass}">${fmtDate(d.WarrantyExpiry)}</div>
-          ${wDays !== null ? `<div style="font-size:0.68rem;color:var(--muted);margin-top:2px;font-family:var(--mono)">${wLabel}</div>` : ''}
-        </div>
+
       </div>
 
       <!-- Document header -->
@@ -1768,7 +1703,6 @@ async function runSerialSearch(serial) {
         <td class="td-company">${i.SoldToCompany || '—'}</td>
         <td>${shippedPill(i.ShippedStatus)}</td>
         <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
-        <td class="td-date">${fmtShort(i.WarrantyExpiry)}</td>
         <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.DocType || '—'}</td>
       </tr>`).join('');
 
@@ -1783,7 +1717,6 @@ async function runSerialSearch(serial) {
             <th>Company</th>
             <th>Shipped</th>
             <th>Delivery</th>
-            <th>Warranty</th>
             <th>Type</th>
           </tr>
         </thead>
