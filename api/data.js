@@ -23,9 +23,12 @@ const ITEM_COLS = `
   i.ExtendedPrice,
   i.CustomDate01    AS DeliveryDate,
   i.CustomText02    AS ShippedStatus,
-  i.CustomText03    AS CustomText03,
+  i.CustomText03    AS DaikinInvoiceNo,
   i.CustomText04    AS SerialNumber,
+  i.CustomText10    AS XeroInvoiceNumber,
+  i.CustomMemo01    AS FurtherDetail,
   i.Notes,
+  i.Vendor,
   DATEDIFF(day, GETDATE(), i.CustomDate01) AS DeliveryDays
 `;
 
@@ -43,7 +46,8 @@ const HEADER_COLS = `
   h.SoldToPostalCode,
   h.SalesRep,
   h.DocDate,
-  h.GrandTotal
+  h.GrandTotal,
+  h.CustomText05    AS XeroInvoiceHeader
 `;
 
 export default async function handler(req, res) {
@@ -197,6 +201,20 @@ export default async function handler(req, res) {
       `);
     }
 
+    // ── DOC ITEMS (all items for a document) ──────────────────────────
+    else if (mode === 'docitems') {
+      if (!req.query.docId) return res.status(400).json({ error: 'docId required' });
+      const r = pool.request();
+      r.input('docId', sql.Int, parseInt(req.query.docId));
+      result = await r.query(`
+        SELECT ${ITEM_COLS}, ${HEADER_COLS}
+        FROM DocumentItems i
+        INNER JOIN DocumentHeaders h ON i.DocID = h.ID
+        WHERE i.DocID = @docId AND ${ITEM_FILTER}
+        ORDER BY i.LineNumberActual ASC
+      `);
+    }
+
     // ── SEARCH ────────────────────────────────────────────────────────
     // No date floor - search spans all historical documents.
     else if (mode === 'search') {
@@ -244,6 +262,8 @@ export default async function handler(req, res) {
           h.SoldToAddress1,
           h.SoldToCity,
           h.SoldToPostalCode,
+          h.SoldToEmail,
+          h.SoldToPhone,
           h.ID AS HeaderID
         FROM DocumentItems i
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
