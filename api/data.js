@@ -8,7 +8,8 @@ const config = {
   options: { encrypt: true, trustServerCertificate: false }
 };
 
-const ITEM_FILTER = `i.ItemType NOT IN ('4', '256') AND i.UnitPrice > 0`;
+const ITEM_FILTER  = `i.ItemType NOT IN ('4', '256') AND i.UnitPrice > 0`;
+const DATE_FLOOR   = `'2026-01-01'`;
 
 const ITEM_COLS = `
   i.ID              AS ItemID,
@@ -75,17 +76,16 @@ export default async function handler(req, res) {
     if (mode === 'stats') {
       result = await pool.request().query(`
         SELECT
-          h.DocType,
-          h.DocStatus,
-          COUNT(DISTINCT h.ID)                                          AS DocCount,
-          ISNULL(SUM(h.GrandTotal), 0)                                  AS TotalValue,
-          SUM(CASE WHEN i.CustomText02 = 'Shipped' THEN 1 ELSE 0 END)  AS ShippedItems,
-          SUM(CASE WHEN (i.CustomText02 != 'Shipped' OR i.CustomText02 IS NULL)
-                   AND ${ITEM_FILTER.replace('i.ItemType', 'i.ItemType')} THEN 1 ELSE 0 END) AS UnshippedItems
-        FROM DocumentHeaders h
-        LEFT JOIN DocumentItems i ON i.DocID = h.ID AND ${ITEM_FILTER}
-        GROUP BY h.DocType, h.DocStatus
-        ORDER BY h.DocType, h.DocStatus
+          DocType,
+          DocStatus,
+          COUNT(*) AS DocCount,
+          ISNULL(SUM(GrandTotal), 0) AS TotalValue,
+          0 AS ShippedItems,
+          0 AS UnshippedItems
+        FROM DocumentHeaders
+        WHERE Created >= ${DATE_FLOOR}
+        GROUP BY DocType, DocStatus
+        ORDER BY DocType, DocStatus
       `);
     }
 
@@ -103,6 +103,7 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND MONTH(i.CustomDate01) = @m
           AND YEAR(i.CustomDate01)  = @y
+          AND h.Created >= ${DATE_FLOOR}
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -117,6 +118,7 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND i.CustomDate01 >= CAST(GETDATE() AS DATE)
           AND i.CustomDate01 <= DATEADD(day, 90, GETDATE())
+          AND h.Created >= ${DATE_FLOOR}
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -131,21 +133,9 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND i.CustomDate01 < CAST(GETDATE() AS DATE)
           AND (i.CustomText02 IS NULL OR i.CustomText02 NOT LIKE '%Shipped%')
+          AND h.Created >= ${DATE_FLOOR}
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
-      `);
-    }
-
-    // ── WARRANTY ───────────────────────────────────────────────────────
-    else if (mode === 'warranty') {
-      result = await pool.request().query(`
-        SELECT TOP 300 ${ITEM_COLS}, ${HEADER_COLS}
-        FROM DocumentItems i
-        INNER JOIN DocumentHeaders h ON i.DocID = h.ID
-        WHERE i.CustomDate02 IS NOT NULL
-          AND i.CustomDate02 >= DATEADD(day, -60, GETDATE())
-          AND ${ITEM_FILTER}
-        ORDER BY i.CustomDate02 ASC
       `);
     }
 
@@ -157,6 +147,7 @@ export default async function handler(req, res) {
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE (i.CustomText02 IS NULL OR i.CustomText02 NOT LIKE '%Shipped%')
           AND i.CustomDate01 IS NOT NULL
+          AND h.Created >= ${DATE_FLOOR}
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -169,6 +160,7 @@ export default async function handler(req, res) {
         FROM DocumentItems i
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE i.CustomText02 LIKE '%Shipped%'
+          AND h.Created >= ${DATE_FLOOR}
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 DESC
       `);
@@ -177,7 +169,7 @@ export default async function handler(req, res) {
     // ── DOCUMENT LIST ──────────────────────────────────────────────────
     else if (mode === 'list') {
       const r = pool.request();
-      let where = 'WHERE 1=1';
+      let where = `WHERE h.Created >= ${DATE_FLOOR}`;
       if (docType) { r.input('docType', sql.NVarChar, docType); where += ' AND h.DocType = @docType'; }
       if (status)  { r.input('status',  sql.NVarChar, status);  where += ' AND h.DocStatus = @status'; }
       r.input('offset',   sql.Int, offset);
@@ -209,6 +201,7 @@ export default async function handler(req, res) {
     }
 
     // ── SERIAL NUMBER SEARCH ───────────────────────────────────────────
+    // No date floor - serial search spans all historical documents.
     else if (mode === 'search') {
       if (!serial) return res.status(400).json({ error: 'serial parameter required' });
       const r = pool.request();
@@ -225,6 +218,7 @@ export default async function handler(req, res) {
     }
 
     // ── ITEM DETAIL ────────────────────────────────────────────────────
+    // No date floor - detail can be opened from search results on any doc.
     else if (mode === 'detail') {
       if (!itemId) return res.status(400).json({ error: 'itemId required' });
       const r = pool.request();
