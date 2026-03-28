@@ -977,13 +977,7 @@ body::before {
         <span class="nav-badge" id="badge-shipped">-</span>
       </button>
 
-      <div class="nav-section-label">Warranty</div>
-      <button class="nav-btn" data-tab="warranty" onclick="switchTab(this,'warranty')">
-        <span class="nav-icon">🛡</span> Warranty Tracker
-        <span class="nav-badge" id="badge-warranty">-</span>
-      </button>
-
-      <div class="nav-section-label">Orders</div>
+           <div class="nav-section-label">Orders</div>
       <button class="nav-btn" data-tab="new-orders" onclick="switchTab(this,'new-orders')">
         <span class="nav-icon">🆕</span> New Orders
         <span class="nav-badge" id="badge-new-orders">-</span>
@@ -1186,8 +1180,7 @@ async function loadDeliveryStats() {
       apiFetch({ mode: 'overdue' }),
       apiFetch({ mode: 'unshipped' }),
       apiFetch({ mode: 'shipped' }),
-      apiFetch({ mode: 'warranty' })
-    ]);
+      ]);
 
     document.getElementById('stat-upcoming').textContent  = upcoming.length;
     document.getElementById('stat-overdue').textContent   = overdue.length;
@@ -1197,7 +1190,7 @@ async function loadDeliveryStats() {
     document.getElementById('badge-overdue').textContent   = overdue.length;
     document.getElementById('badge-unshipped').textContent = unshipped.length;
     document.getElementById('badge-shipped').textContent   = shipped.length;
-    document.getElementById('badge-warranty').textContent  = warranty.length;
+    
 
     document.getElementById('lastUpdated').textContent =
       'Updated ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
@@ -1219,7 +1212,6 @@ function switchTab(btn, tab) {
     'overdue':           'Overdue — Not Shipped',
     'unshipped':         'Unshipped Items',
     'shipped':           'Shipped Items',
-    'warranty':          'Warranty Tracker',
     'new-orders':        'New Orders',
     'completed-orders':  'Completed Orders',
     'open-quotes':       'Open Quotes',
@@ -1385,7 +1377,7 @@ function showDayItems(day) {
     `${day} ${months[calMonth - 1]} ${calYear} — ${items.length} item${items.length !== 1 ? 's' : ''}`;
 
   document.getElementById('dayModalBody').innerHTML = items.map(i => `
-    <div class="day-item-row" onclick="showDetail(${i.ItemID})">
+    <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID})">
       <div>
         <div class="di-desc">${i.Description || '—'}</div>
         <div class="di-sub">${i.DocNo} · ${i.SoldToCompany || '—'} · ${i.SalesRep || '—'}</div>
