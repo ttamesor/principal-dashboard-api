@@ -880,13 +880,14 @@ function renderCalendar() {
     const unshipped = items.filter(i=>!i.ShippedStatus||!i.ShippedStatus.toLowerCase().includes('shipped')).length;
     const isPast    = new Date(calYear,calMonth-1,d)<new Date(now.getFullYear(),now.getMonth(),now.getDate());
     let dots = '';
-    for (let s=0;s<Math.min(shipped,8);s++)   dots+=`<div class="cal-dot shipped"></div>`;
-    for (let u=0;u<Math.min(unshipped,8);u++) dots+=`<div class="cal-dot ${isPast&&unshipped?'overdue':'unshipped'}"></div>`;
+    const dotCap = 4;
+    for (let s=0;s<Math.min(shipped,dotCap);s++)   dots+=`<div class="cal-dot shipped"></div>`;
+    for (let u=0;u<Math.min(unshipped,dotCap);u++) dots+=`<div class="cal-dot ${isPast&&unshipped?'overdue':'unshipped'}"></div>`;
     cells+=`<div class="cal-day${isToday?' today':''}${items.length?' has-items':''}"
       ${items.length?`onclick="showDayItems(${d})"`:''}>
       <div class="cal-day-num">${d}</div>
       <div class="cal-dots">${dots}</div>
-      ${items.length>4?`<div class="cal-count">${items.length}</div>`:''}
+      ${items.length>0?`<div class="cal-count">${items.length}</div>`:''}
     </div>`;
   }
   const total=offset+daysInMonth, remaining=total%7===0?0:7-(total%7);
@@ -1022,6 +1023,7 @@ function showDayItems(day) {
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dayModalTitle').textContent =
     `${day} ${months[calMonth-1]} ${calYear} — ${items.length} item${items.length!==1?'s':''}`;
+  items.sort((a,b) => (a.DocNo||'').localeCompare(b.DocNo||''));
   document.getElementById('dayModalBody').innerHTML = items.map(i=>`
     <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID})">
       <div>
