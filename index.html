@@ -515,6 +515,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
 .di-desc { font-size: 0.88rem; font-weight: 600; color: #ffffff; margin-bottom: 2px; word-wrap: break-word; }
 .di-sub  { font-size: 0.77rem; color: var(--dim); }
 .di-serial { font-family: var(--mono); font-size: 0.73rem; color: var(--cyan); margin-top: 2px; }
+.di-notes  { font-size: 0.72rem; color: var(--amber); margin-top: 3px; line-height: 1.4; }
 
 /* ── DOC TABLE ── */
 .doc-table { width: 100%; border-collapse: collapse; }
@@ -715,6 +716,19 @@ body.light .notes-box-text { color: #1a202c; }
       </div>
       <button class="panel-close" onclick="closePanel()">✕</button>
     </div>
+    <!-- Breadcrumb -->
+    <div id="panelBreadcrumb" style="display:none;align-items:center;gap:6px;padding:7px 20px;border-bottom:1px solid var(--border);background:var(--bg3);font-size:0.72rem;font-family:var(--mono);">
+      <span style="color:var(--muted);cursor:pointer" onclick="closePanel()" id="breadcrumbTab"></span>
+      <span style="color:var(--muted)">›</span>
+      <span style="color:var(--blue);cursor:pointer" onclick="openAllItems()" id="breadcrumbDoc"></span>
+      <span style="color:var(--muted)">›</span>
+      <span style="color:var(--dim)" id="breadcrumbItem"></span>
+      <!-- Nav arrows -->
+      <div style="margin-left:auto;display:flex;gap:4px">
+        <button id="panelPrev" onclick="navigatePanel(-1)" title="Previous item" style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">‹</button>
+        <button id="panelNext" onclick="navigatePanel(1)"  title="Next item"     style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">›</button>
+      </div>
+    </div>
     <div id="panelAllItems" onclick="openAllItems()" style="display:none;align-items:center;gap:8px;padding:9px 20px;border-bottom:1px solid var(--border);background:rgba(59,130,246,0.06);cursor:pointer;transition:background 0.15s;font-size:0.78rem;color:var(--blue);font-weight:500" onmouseover="this.style.background='rgba(59,130,246,0.12)'" onmouseout="this.style.background='rgba(59,130,246,0.06)'">
       <span style="font-size:1rem">📋</span>
       <span id="panelAllItemsLabel">View all items on this document</span>
@@ -883,6 +897,12 @@ function switchTab(btn, tab) {
     'open-quotes':'Open Quotes', 'won-quotes':'Won Quotes', search:'Search Results'
   };
   document.getElementById('pageTitle').textContent = titles[tab]||tab;
+  // Update URL without page reload
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+    window.history.pushState({tab}, '', url.toString());
+  } catch(_) {}
   clearAllSearches();
   loadTab(tab);
 }
@@ -1135,12 +1155,14 @@ function showDayItems(day) {
   document.getElementById('dayModalTitle').textContent =
     `${day} ${months[calMonth-1]} ${calYear} — ${items.length} item${items.length!==1?'s':''}`;
   items.sort((a,b) => (a.DocNo||'').localeCompare(b.DocNo||''));
+  const dayIds = items.map(i=>i.ItemID);
   document.getElementById('dayModalBody').innerHTML = items.map(i=>`
-    <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID})">
+    <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID},[${dayIds.join(',')}])">
       <div>
         <div class="di-desc">${i.Description||'—'}</div>
         <div class="di-sub">${i.DocNo} · ${i.SoldToCompany||'—'} · ${i.SalesRep||'—'}</div>
         ${i.SerialNumber?`<div class="di-serial">S/N: ${i.SerialNumber}</div>`:''}
+        ${i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped')&&i.Notes?`<div class="di-notes">📝 ${i.Notes}</div>`:''}
       </div>
       <div>${shippedPill(i.ShippedStatus)}</div>
     </div>`).join('');
@@ -1153,6 +1175,10 @@ function closeDayModal(e) {
 }
 
 // ── Item table state ─────────────────────────────────────────────────────────
+// Panel navigation context
+let _panelContext = []; // list of itemIDs currently visible
+let _panelIndex   = -1; // current position in that list
+
 let _itemData       = [];   // full unfiltered dataset
 let _itemFiltered   = [];   // after rep + company filter
 let _itemSortCol    = 'DeliveryDate';
@@ -1214,9 +1240,11 @@ function _buildItemTable(title) {
     `<th class="sortable${_itemSortCol===col?' sort-'+(_itemSortDir===1?'asc':'desc'):''}"
       onclick="sortItemTable('${col}')">${label}${arrow(col)}</th>`;
 
-  const rows = (items) => items.map(i => {
+  const rows = (items) => {
+    const ids = items.map(i=>i.ItemID);
+    return items.map(i => {
     const days = i.DeliveryDays;
-    return `<tr onclick="showDetail(${i.ItemID})">
+    return `<tr onclick="showDetail(${i.ItemID},[${ids.join(',')}])">
       <td class="td-docno">${i.DocNo||'—'}</td>
       <td class="td-desc">${i.Description||'—'}</td>
       <td class="td-company">${i.SoldToCompany||'—'}</td>
@@ -1227,6 +1255,7 @@ function _buildItemTable(title) {
       <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'—'}</td>
     </tr>`;
   }).join('');
+  };
 
   area.innerHTML = `
     <div class="section-header">
@@ -1348,7 +1377,13 @@ function renderDocTable(data, title) {
 }
 
 // ── Detail panel ──────────────────────────────────────────────────────────────
-async function showDetail(itemId) {
+async function showDetail(itemId, contextList) {
+  // Update nav context if a new list is provided
+  if (contextList && contextList.length) {
+    _panelContext = contextList;
+  }
+  _panelIndex = _panelContext.indexOf(Number(itemId));
+
   document.getElementById('panelOverlay').classList.add('open');
   document.getElementById('pDocNo').textContent   = 'Loading…';
   document.getElementById('pDesc').textContent    = '';
@@ -1365,6 +1400,22 @@ async function showDetail(itemId) {
     document.getElementById('panelAllItems').dataset.docId  = d.HeaderID||'';
     document.getElementById('panelAllItems').dataset.docNo  = d.DocNo||'';
     document.getElementById('panelAllItems').style.display  = d.HeaderID ? 'flex' : 'none';
+
+    // Breadcrumb
+    const bc = document.getElementById('panelBreadcrumb');
+    if (bc) {
+      bc.style.display = 'flex';
+      document.getElementById('breadcrumbTab').textContent  = document.getElementById('pageTitle').textContent||'';
+      document.getElementById('breadcrumbDoc').textContent  = d.DocNo||'';
+      document.getElementById('breadcrumbItem').textContent = (d.Description||'').slice(0,30)+((d.Description||'').length>30?'…':'');
+      document.getElementById('panelAllItems').dataset.docId = d.HeaderID||'';
+      document.getElementById('panelAllItems').dataset.docNo = d.DocNo||'';
+    }
+    // Nav arrows
+    const prev = document.getElementById('panelPrev');
+    const next = document.getElementById('panelNext');
+    if (prev) prev.style.opacity = _panelIndex > 0 ? '1' : '0.25';
+    if (next) next.style.opacity = _panelIndex < _panelContext.length-1 ? '1' : '0.25';
 
     const dDays  = d.DeliveryDays;
     const dClass = dDays===null?'':dDays<0?'red':dDays<=7?'amber':'green';
@@ -1538,6 +1589,12 @@ async function showDocItems(docId, docNo) {
   }
 }
 
+function navigatePanel(dir) {
+  const newIndex = _panelIndex + dir;
+  if (newIndex < 0 || newIndex >= _panelContext.length) return;
+  showDetail(_panelContext[newIndex]);
+}
+
 function openAllItems() {
   const el    = document.getElementById('panelAllItems');
   const docId = el.dataset.docId;
@@ -1620,6 +1677,25 @@ document.addEventListener('keydown', e => {
   if ((e.metaKey||e.ctrlKey)&&e.key==='k') { e.preventDefault(); document.getElementById('searchSerial').focus(); }
 });
 
+// ── URL / History ────────────────────────────────────────────────────────────
+window.addEventListener('popstate', (e) => {
+  const tab = e.state?.tab || new URLSearchParams(window.location.search).get('tab') || 'calendar';
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) {
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const titles = {
+      calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue — Not Shipped',
+      unshipped:'Unshipped Items', shipped:'Shipped Items', noserial:'Missing Serial Numbers',
+      'new-orders':'New Orders', 'completed-orders':'Completed Orders',
+      'open-quotes':'Open Quotes', 'won-quotes':'Won Quotes', search:'Search Results'
+    };
+    document.getElementById('pageTitle').textContent = titles[tab]||tab;
+    currentTab = tab;
+    loadTab(tab);
+  }
+});
+
 // ── Theme ────────────────────────────────────────────────────────────────────
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
@@ -1639,7 +1715,20 @@ try {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 loadStats();
-loadTab('calendar');
+const _initTab = new URLSearchParams(window.location.search).get('tab') || 'calendar';
+const _initBtn = document.querySelector(`[data-tab="${_initTab}"]`);
+if (_initBtn) {
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  _initBtn.classList.add('active');
+  currentTab = _initTab;
+}
+// Set initial URL state
+try {
+  const _u = new URL(window.location.href);
+  _u.searchParams.set('tab', _initTab);
+  window.history.replaceState({tab:_initTab}, '', _u.toString());
+} catch(_) {}
+loadTab(_initTab);
 </script>
 </body>
 </html>
