@@ -164,7 +164,7 @@ body::before {
 
 /* ── STATS BAR ── */
 .stats-bar {
-  display: grid; grid-template-columns: repeat(6, 1fr);
+  display: grid; grid-template-columns: repeat(7, 1fr);
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
 .stat-cell {
@@ -559,7 +559,7 @@ body.light .notes-box-text { color: #1a202c; }
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
-  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  .stats-bar { grid-template-columns: repeat(4, 1fr); }
   .topbar { padding: 10px 14px; gap: 8px; }
   .search-trio { gap: 5px; }
   .search-wrap-sm { width: 100px; }
@@ -569,7 +569,7 @@ body.light .notes-box-text { color: #1a202c; }
 }
 @media (max-width: 900px) and (min-width: 769px) {
   .layout { grid-template-columns: 180px 1fr; }
-  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  .stats-bar { grid-template-columns: repeat(4, 1fr); }
   .search-wrap-sm { width: 130px; }
 }
 </style>
@@ -608,6 +608,9 @@ body.light .notes-box-text { color: #1a202c; }
       </button>
       <button class="nav-btn green" data-tab="shipped" onclick="switchTab(this,'shipped')">
         <span class="nav-icon">✓</span> Shipped
+      </button>
+      <button class="nav-btn danger" data-tab="noserial" onclick="switchTab(this,'noserial')">
+        <span class="nav-icon">⚠</span> No Serial No.
       </button>
 
       <div class="nav-section-label">Orders</div>
@@ -687,6 +690,11 @@ body.light .notes-box-text { color: #1a202c; }
         <div class="stat-val" id="stat-open-quotes">-</div>
         <div class="stat-sub">in pipeline</div>
       </div>
+      <div class="stat-cell c-red" onclick="switchTab(document.querySelector('[data-tab=noserial]'),'noserial')">
+        <div class="stat-label">No Serial</div>
+        <div class="stat-val" id="stat-noserial">-</div>
+        <div class="stat-sub">delivery set</div>
+      </div>
     </div>
 
     <div class="content-area" id="contentArea">
@@ -706,6 +714,11 @@ body.light .notes-box-text { color: #1a202c; }
         <div class="panel-company" id="pCompany"></div>
       </div>
       <button class="panel-close" onclick="closePanel()">✕</button>
+    </div>
+    <div id="panelAllItems" onclick="openAllItems()" style="display:none;align-items:center;gap:8px;padding:9px 20px;border-bottom:1px solid var(--border);background:rgba(59,130,246,0.06);cursor:pointer;transition:background 0.15s;font-size:0.78rem;color:var(--blue);font-weight:500" onmouseover="this.style.background='rgba(59,130,246,0.12)'" onmouseout="this.style.background='rgba(59,130,246,0.06)'">
+      <span style="font-size:1rem">📋</span>
+      <span id="panelAllItemsLabel">View all items on this document</span>
+      <span style="margin-left:auto;font-size:0.7rem;opacity:0.6">↗</span>
     </div>
     <div class="panel-body" id="panelBody"></div>
   </div>
@@ -816,7 +829,7 @@ async function loadStats() {
     document.getElementById('stat-open-quotes').textContent = openQuotes;
 
     // Mark delivery stats as loading with spinner
-    ['stat-upcoming','stat-overdue','stat-unshipped'].forEach(id => {
+    ['stat-upcoming','stat-overdue','stat-unshipped','stat-noserial'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.textContent = ''; el.classList.add('loading'); }
     });
@@ -844,6 +857,7 @@ async function loadDeliveryStats() {
   fetchStat('upcoming',  'stat-upcoming',  2000);
   fetchStat('overdue',   'stat-overdue',   4000);
   fetchStat('unshipped', 'stat-unshipped', 6000);
+  fetchStat('noserial',  'stat-noserial',  8000);
   document.getElementById('lastUpdated').textContent =
     'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
@@ -864,7 +878,7 @@ function switchTab(btn, tab) {
   if (btn) btn.classList.add('active');
   const titles = {
     calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue — Not Shipped',
-    unshipped:'Unshipped Items', shipped:'Shipped Items',
+    unshipped:'Unshipped Items', shipped:'Shipped Items', noserial:'Missing Serial Numbers',
     'new-orders':'New Orders', 'completed-orders':'Completed Orders',
     'open-quotes':'Open Quotes', 'won-quotes':'Won Quotes', search:'Search Results'
   };
@@ -893,6 +907,9 @@ async function loadTab(tab) {
       renderItemTable(data,'Unshipped items with delivery dates');
     } else if (tab==='shipped') {
       renderItemTable(await apiFetch({mode:'shipped'}),'Shipped items');
+    } else if (tab==='noserial') {
+      const data = await apiFetch({mode:'noserial'});
+      renderItemTable(data,'Items with delivery date but no serial number recorded');
     } else if (tab==='new-orders') {
       renderDocTable(await apiFetch({mode:'list',docType:'ORDER',status:'New Order',page:1}),'New Orders');
     } else if (tab==='completed-orders') {
@@ -1344,6 +1361,10 @@ async function showDetail(itemId) {
     document.getElementById('pDocNo').textContent   = d.DocNo+(d.DocType?' · '+d.DocType:'');
     document.getElementById('pDesc').textContent    = d.Description||'—';
     document.getElementById('pCompany').textContent = d.SoldToCompany||'—';
+    // Store HeaderID for "all items" link
+    document.getElementById('panelAllItems').dataset.docId  = d.HeaderID||'';
+    document.getElementById('panelAllItems').dataset.docNo  = d.DocNo||'';
+    document.getElementById('panelAllItems').style.display  = d.HeaderID ? 'flex' : 'none';
 
     const dDays  = d.DeliveryDays;
     const dClass = dDays===null?'':dDays<0?'red':dDays<=7?'amber':'green';
@@ -1515,6 +1536,15 @@ async function showDocItems(docId, docNo) {
     document.getElementById('dayModalBody').innerHTML =
       `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">${e.message}</div></div>`;
   }
+}
+
+function openAllItems() {
+  const el    = document.getElementById('panelAllItems');
+  const docId = el.dataset.docId;
+  const docNo = el.dataset.docNo;
+  if (!docId) return;
+  closePanel();
+  showDocItems(parseInt(docId), docNo);
 }
 
 function closePanel(e) {
