@@ -529,6 +529,32 @@ th.sort-desc .sort-arrow { opacity: 1; }
 .progress-bar { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-top: 3px; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); border-radius: 2px; transition: width 0.5s ease; }
 
+/* ── LIGHT MODE ── */
+body.light {
+  --bg:      #f0f4f8;
+  --bg2:     #e4eaf2;
+  --bg3:     #d8e0ec;
+  --bg4:     #ccd6e8;
+  --border:  rgba(0,0,0,0.07);
+  --border2: rgba(0,0,0,0.13);
+  --text:    #1a202c;
+  --dim:     #4a5568;
+  --muted:   #a0aec0;
+}
+body.light .dc-val        { color: #1a202c; }
+body.light .panel-desc    { color: #1a202c; }
+body.light .stat-val      { color: #1a202c; }
+body.light .td-date       { color: #1a202c; }
+body.light .td-days       { color: #1a202c; }
+body.light .td-desc       { color: #1a202c; }
+body.light .di-desc       { color: #1a202c; }
+body.light .week-item-desc{ color: #1a202c; }
+body.light .search-input-sm { background: #ffffff; color: #1a202c; }
+body.light .filter-input    { background: #ffffff; color: #1a202c; }
+body.light .filter-select   { background: #ffffff; color: #1a202c; color-scheme: light; }
+body.light body::before { opacity: 0; }
+body.light .notes-box-text { color: #1a202c; }
+
 /* ── MOBILE ── */
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
@@ -626,6 +652,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
           <button class="search-clear-sm" id="clearDocNo" onclick="clearSearchBox('docno')">✕</button>
         </div>
       </div>
+      <button class="refresh-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
       <button class="refresh-btn" onclick="refreshCurrent()">↺ Refresh</button>
     </div>
 
@@ -1562,6 +1589,23 @@ document.addEventListener('keydown', e => {
   if (e.key==='Escape') { closePanel(); closeDayModal(); }
   if ((e.metaKey||e.ctrlKey)&&e.key==='k') { e.preventDefault(); document.getElementById('searchSerial').focus(); }
 });
+
+// ── Theme ────────────────────────────────────────────────────────────────────
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.textContent = isLight ? '🌙' : '☀️';
+  try { localStorage.setItem('pc_theme', isLight ? 'light' : 'dark'); } catch(_) {}
+}
+
+// Restore saved theme
+try {
+  if (localStorage.getItem('pc_theme') === 'light') {
+    document.body.classList.add('light');
+    const btn = document.getElementById('themeToggle');
+    if (btn) btn.textContent = '🌙';
+  }
+} catch(_) {}
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 loadStats();
