@@ -215,6 +215,20 @@ export default async function handler(req, res) {
       `);
     }
 
+    // ── NO SERIAL (delivery date set, serial missing) ────────────────
+    else if (mode === 'noserial') {
+      result = await pool.request().query(`
+        SELECT TOP 1000 ${ITEM_COLS}, ${HEADER_COLS}
+        FROM DocumentItems i
+        INNER JOIN DocumentHeaders h ON i.DocID = h.ID
+        WHERE i.CustomDate01 IS NOT NULL
+          AND (i.CustomText04 IS NULL OR LTRIM(RTRIM(i.CustomText04)) = '')
+          AND h.Created >= ${DATE_FLOOR}
+          AND ${ITEM_FILTER}
+        ORDER BY i.CustomDate01 ASC
+      `);
+    }
+
     // ── SEARCH ────────────────────────────────────────────────────────
     // No date floor - search spans all historical documents.
     else if (mode === 'search') {
