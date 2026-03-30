@@ -308,6 +308,74 @@ body::before {
 .days-overdue { color: var(--red); }
 .days-past    { color: var(--muted); }
 
+/* Filter bar */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.filter-select {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  outline: none;
+  cursor: pointer;
+  color-scheme: dark;
+  transition: border-color 0.15s;
+}
+.filter-select:focus { border-color: var(--blue); }
+.filter-input {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  outline: none;
+  width: 180px;
+  transition: border-color 0.15s;
+}
+.filter-input::placeholder { color: var(--muted); }
+.filter-input:focus { border-color: var(--blue); }
+.filter-clear {
+  background: none;
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-clear:hover { background: var(--bg4); color: var(--text); }
+.filter-count {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* Sortable column headers */
+.item-table th.sortable,
+.doc-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.item-table th.sortable:hover,
+.doc-table th.sortable:hover { color: var(--text); }
+.sort-arrow { margin-left: 4px; opacity: 0.4; font-size: 0.55rem; }
+th.sort-asc .sort-arrow  { opacity: 1; content: '▲'; }
+th.sort-desc .sort-arrow { opacity: 1; }
+
 /* Load more */
 .load-more-wrap { text-align: center; padding: 20px 0 8px; }
 .load-more-btn {
@@ -1041,16 +1109,63 @@ function closeDayModal(e) {
     document.getElementById('dayModalOverlay').classList.remove('open');
 }
 
-// ── Item table ────────────────────────────────────────────────────────────────
+// ── Item table state ─────────────────────────────────────────────────────────
+let _itemData       = [];   // full unfiltered dataset
+let _itemFiltered   = [];   // after rep + company filter
+let _itemSortCol    = 'DeliveryDate';
+let _itemSortDir    = 1;    // 1=asc, -1=desc
+
 function renderItemTable(data, title) {
+  _itemData     = data;
+  _itemSortCol  = 'DeliveryDate';
+  _itemSortDir  = 1;
+  _buildItemTable(title);
+}
+
+function _buildItemTable(title) {
   const area = document.getElementById('contentArea');
-  const PAGE = 1000;
-  const visible = data.slice(0, PAGE);
-  if (!data.length) {
+  if (!_itemData.length) {
     area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No items found</div></div>`;
     return;
   }
-  const buildRows = (rows) => rows.map(i => {
+
+  // Build rep list from full dataset
+  const reps = [...new Set(_itemData.map(i=>i.SalesRep||'').filter(Boolean))].sort();
+
+  // Read current filter values (preserve across re-renders)
+  const repVal  = document.getElementById('filterRep')?.value  || '';
+  const coVal   = (document.getElementById('filterCompany')?.value || '').toLowerCase().trim();
+
+  // Apply filters
+  _itemFiltered = _itemData.filter(i => {
+    if (repVal && (i.SalesRep||'') !== repVal) return false;
+    if (coVal  && !(i.SoldToCompany||'').toLowerCase().includes(coVal)) return false;
+    return true;
+  });
+
+  // Apply sort
+  const col = _itemSortCol;
+  _itemFiltered.sort((a,b) => {
+    let av = a[col], bv = b[col];
+    if (col==='DeliveryDate'||col==='DocDate') { av=av?new Date(av):new Date(0); bv=bv?new Date(bv):new Date(0); }
+    else if (col==='DeliveryDays'||col==='UnitPrice'||col==='ExtendedPrice') { av=parseFloat(av||0); bv=parseFloat(bv||0); }
+    else { av=(av||'').toString().toLowerCase(); bv=(bv||'').toString().toLowerCase(); }
+    return av<bv?-_itemSortDir:av>bv?_itemSortDir:0;
+  });
+
+  const PAGE    = 1000;
+  const visible = _itemFiltered.slice(0, PAGE);
+
+  const arrow = (col) => {
+    if (_itemSortCol !== col) return '<span class="sort-arrow">↕</span>';
+    return _itemSortDir===1?'<span class="sort-arrow">▲</span>':'<span class="sort-arrow">▼</span>';
+  };
+
+  const th = (label, col) =>
+    `<th class="sortable${_itemSortCol===col?' sort-'+(_itemSortDir===1?'asc':'desc'):''}"
+      onclick="sortItemTable('${col}')">${label}${arrow(col)}</th>`;
+
+  const rows = (items) => items.map(i => {
     const days = i.DeliveryDays;
     return `<tr onclick="showDetail(${i.ItemID})">
       <td class="td-docno">${i.DocNo||'—'}</td>
@@ -1067,36 +1182,70 @@ function renderItemTable(data, title) {
   area.innerHTML = `
     <div class="section-header">
       <div class="section-title">${title}</div>
-      <div class="section-count">${data.length} items</div>
+    </div>
+    <div class="filter-bar">
+      <select class="filter-select" id="filterRep" onchange="_buildItemTable('${title}')">
+        <option value="">All reps</option>
+        ${reps.map(r=>`<option value="${r}"${r===repVal?'selected':''}>${r}</option>`).join('')}
+      </select>
+      <input class="filter-input" id="filterCompany" placeholder="Filter by company…"
+        value="${coVal}" oninput="_buildItemTable('${title}')">
+      ${repVal||coVal?`<button class="filter-clear" onclick="clearItemFilters('${title}')">✕ Clear</button>`:''}
+      <div class="filter-count">${_itemFiltered.length} of ${_itemData.length} items</div>
     </div>
     <table class="item-table">
       <thead><tr>
-        <th>Doc No</th><th>Description</th><th>Company</th>
-        <th>Serial No</th><th>Status</th><th>Delivery</th><th>Days</th><th>Rep</th>
+        ${th('Doc No','DocNo')}
+        ${th('Description','Description')}
+        ${th('Company','SoldToCompany')}
+        <th>Serial No</th>
+        <th>Status</th>
+        ${th('Delivery','DeliveryDate')}
+        ${th('Days','DeliveryDays')}
+        ${th('Rep','SalesRep')}
       </tr></thead>
-      <tbody id="itemTbody">${buildRows(visible)}</tbody>
+      <tbody id="itemTbody">${rows(visible)}</tbody>
     </table>
-    ${data.length>PAGE?`<div class="load-more-wrap"><button class="load-more-btn" onclick="loadMoreItems()">Load more (${data.length-PAGE} remaining)</button></div>`:''}`;
+    ${_itemFiltered.length>PAGE?`<div class="load-more-wrap"><button class="load-more-btn" onclick="loadMoreItems()">Load more (${_itemFiltered.length-PAGE} remaining)</button></div>`:''}`;
+}
 
-  // Store full data for load more
-  area._allData = data;
-  area._page    = 1;
-  area._buildRows = buildRows;
+function sortItemTable(col) {
+  if (_itemSortCol===col) _itemSortDir*=-1;
+  else { _itemSortCol=col; _itemSortDir=1; }
+  const title = document.querySelector('.section-title')?.textContent||'';
+  _buildItemTable(title);
+}
+
+function clearItemFilters(title) {
+  const rep=document.getElementById('filterRep'), co=document.getElementById('filterCompany');
+  if (rep) rep.value='';
+  if (co)  co.value='';
+  _buildItemTable(title);
 }
 
 function loadMoreItems() {
   const area  = document.getElementById('contentArea');
   const PAGE  = 1000;
-  area._page++;
-  const chunk = area._allData.slice(0, area._page * PAGE);
   const tbody = document.getElementById('itemTbody');
-  if (tbody) tbody.innerHTML = area._buildRows(chunk);
-  if (chunk.length >= area._allData.length) {
-    const btn = document.querySelector('.load-more-btn');
+  const currentCount = tbody?.querySelectorAll('tr').length||0;
+  const next  = _itemFiltered.slice(0, currentCount+PAGE);
+  const days  = (i) => i.DeliveryDays;
+  if (tbody) tbody.innerHTML = next.map(i=>`<tr onclick="showDetail(${i.ItemID})">
+    <td class="td-docno">${i.DocNo||'—'}</td>
+    <td class="td-desc">${i.Description||'—'}</td>
+    <td class="td-company">${i.SoldToCompany||'—'}</td>
+    <td class="td-serial">${i.SerialNumber||'—'}</td>
+    <td>${shippedPill(i.ShippedStatus)}</td>
+    <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
+    <td class="td-days ${daysClass(days(i))}">${daysLabel(days(i))}</td>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'—'}</td>
+  </tr>`).join('');
+  if (next.length>=_itemFiltered.length) {
+    const btn=document.querySelector('.load-more-btn');
     if (btn) btn.parentElement.remove();
   } else {
-    const btn = document.querySelector('.load-more-btn');
-    if (btn) btn.textContent = `Load more (${area._allData.length - chunk.length} remaining)`;
+    const btn=document.querySelector('.load-more-btn');
+    if (btn) btn.textContent=`Load more (${_itemFiltered.length-next.length} remaining)`;
   }
 }
 
