@@ -226,7 +226,7 @@ body::before {
 }
 .cal-day {
   min-height: 72px; background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px; transition: background 0.12s; cursor: default; position: relative;
+  border-radius: 8px; padding: 6px 6px 18px 6px; transition: background 0.12s; cursor: default; position: relative;
 }
 .cal-day.has-items { cursor: pointer; }
 .cal-day.has-items:hover { background: var(--bg3); border-color: var(--border2); }
@@ -235,7 +235,7 @@ body::before {
 .cal-day-num { font-size: 0.72rem; font-family: var(--mono); color: var(--dim); margin-bottom: 4px; }
 .cal-day.today .cal-day-num { color: var(--blue); font-weight: 600; }
 .cal-dots { display: flex; flex-wrap: wrap; gap: 2px; }
-.cal-dot { width: 8px; height: 8px; border-radius: 2px; font-size: 0; flex-shrink: 0; }
+.cal-dot { width: 7px; height: 7px; border-radius: 2px; font-size: 0; flex-shrink: 0; }
 .cal-dot.shipped   { background: var(--green); }
 .cal-dot.unshipped { background: var(--amber); }
 .cal-dot.overdue   { background: var(--red); }
@@ -948,9 +948,8 @@ function renderCalendar() {
     const unshipped = items.filter(i=>!i.ShippedStatus||!i.ShippedStatus.toLowerCase().includes('shipped')).length;
     const isPast    = new Date(calYear,calMonth-1,d)<new Date(now.getFullYear(),now.getMonth(),now.getDate());
     let dots = '';
-    const dotCap = 4;
-    for (let s=0;s<Math.min(shipped,dotCap);s++)   dots+=`<div class="cal-dot shipped"></div>`;
-    for (let u=0;u<Math.min(unshipped,dotCap);u++) dots+=`<div class="cal-dot ${isPast&&unshipped?'overdue':'unshipped'}"></div>`;
+    for (let s=0;s<shipped;s++)   dots+=`<div class="cal-dot shipped"></div>`;
+    for (let u=0;u<unshipped;u++) dots+=`<div class="cal-dot ${isPast&&unshipped?'overdue':'unshipped'}"></div>`;
     cells+=`<div class="cal-day${isToday?' today':''}${items.length?' has-items':''}"
       ${items.length?`onclick="showDayItems(${d})"`:''}>
       <div class="cal-day-num">${d}</div>
@@ -1129,6 +1128,12 @@ function _buildItemTable(title) {
     return;
   }
 
+  // Save focus state before re-render
+  const focusedId  = document.activeElement?.id;
+  const cursorPos  = (focusedId === 'filterCompany')
+    ? document.getElementById('filterCompany')?.selectionStart
+    : null;
+
   // Build rep list from full dataset
   const reps = [...new Set(_itemData.map(i=>i.SalesRep||'').filter(Boolean))].sort();
 
@@ -1207,6 +1212,17 @@ function _buildItemTable(title) {
       <tbody id="itemTbody">${rows(visible)}</tbody>
     </table>
     ${_itemFiltered.length>PAGE?`<div class="load-more-wrap"><button class="load-more-btn" onclick="loadMoreItems()">Load more (${_itemFiltered.length-PAGE} remaining)</button></div>`:''}`;
+
+  // Restore focus after re-render
+  if (focusedId) {
+    const el = document.getElementById(focusedId);
+    if (el) {
+      el.focus();
+      if (cursorPos !== null && el.setSelectionRange) {
+        el.setSelectionRange(cursorPos, cursorPos);
+      }
+    }
+  }
 }
 
 function sortItemTable(col) {
