@@ -1068,21 +1068,29 @@ function renderWeekView() {
       const items   = byDate[key]||[];
       const isToday = d.toDateString()===now.toDateString();
       const isPast  = d<new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      const itemRows = items.map(i => {
-        const shipped = i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped');
-        const color   = shipped?'var(--green)':isPast?'var(--red)':'var(--amber)';
-        return `<div class="week-item" onclick="closeDayModal();showDetail(${i.ItemID})" style="border-left:3px solid ${color}">
-          <div class="week-item-desc">${i.Description||'—'}</div>
-          <div class="week-item-sub">${i.DocNo||''} · ${i.SoldToCompany||''}</div>
-          ${i.SerialNumber?`<div class="week-item-serial">S/N: ${i.SerialNumber}</div>`:''}
-          <div style="margin-top:4px">${shippedPill(i.ShippedStatus)}</div>
+      // Group items by DocNo
+      const byDoc = {};
+      items.forEach(i => {
+        if (!byDoc[i.DocNo]) byDoc[i.DocNo] = { ...i, _items: [] };
+        byDoc[i.DocNo]._items.push(i);
+      });
+      const docGroups = Object.values(byDoc);
+      const itemRows = docGroups.map(group => {
+        const allShipped = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
+        const color = allShipped ? 'var(--green)' : isPast ? 'var(--red)' : 'var(--amber)';
+        const count = group._items.length;
+        const pill  = allShipped ? '<span class="pill pill-shipped">✓ Shipped</span>' : isPast ? '<span class="pill pill-overdue">Overdue</span>' : '<span class="pill pill-unshipped">Pending</span>';
+        return `<div class="week-item" onclick="closeDayModal();showDocItems(${group.DocID},'${(group.DocNo||'').replace(/'/g,"\\'")}',true)" style="border-left:3px solid ${color}">
+          <div class="week-item-desc">${group.DocNo||'—'} · ${group.SoldToCompany||''}</div>
+          <div class="week-item-sub">${count} item${count!==1?'s':''} · ${group.SalesRep||''}</div>
+          <div style="margin-top:4px">${pill}</div>
         </div>`;
       }).join('')||`<div class="week-empty">No deliveries</div>`;
       return `<div class="week-col${isToday?' week-today':''}">
         <div class="week-day-header">
           <div class="week-day-name">${dayNames[idx]}</div>
           <div class="week-day-num${isToday?' week-today-num':''}">${d.getDate()}</div>
-          ${items.length?`<div class="week-day-count">${items.length}</div>`:''}
+          ${docGroups.length?`<div class="week-day-count">${docGroups.length}</div>`:''}
         </div>
         <div class="week-day-body">${itemRows}</div>
       </div>`;
@@ -1146,20 +1154,30 @@ function calToday() {
 function showDayItems(day) {
   const items = calData.filter(i=>new Date(i.DeliveryDate).getDate()===day);
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Group by DocNo
+  const byDoc = {};
+  items.forEach(i => {
+    if (!byDoc[i.DocNo]) byDoc[i.DocNo] = { ...i, _items: [] };
+    byDoc[i.DocNo]._items.push(i);
+  });
+  const docGroups = Object.values(byDoc);
+
   document.getElementById('dayModalTitle').textContent =
-    `${day} ${months[calMonth-1]} ${calYear} — ${items.length} item${items.length!==1?'s':''}`;
-  items.sort((a,b) => (a.DocNo||'').localeCompare(b.DocNo||''));
-  const dayIds = items.map(i=>i.ItemID);
-  document.getElementById('dayModalBody').innerHTML = items.map(i=>`
-    <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID},[${dayIds.join(',')}])">
+    `${day} ${months[calMonth-1]} ${calYear} — ${docGroups.length} order${docGroups.length!==1?'s':''}`;
+
+  document.getElementById('dayModalBody').innerHTML = docGroups.map(group => {
+    const allShipped = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
+    const count = group._items.length;
+    return `<div class="day-item-row" onclick="closeDayModal();showDocItems(${group.DocID},'${(group.DocNo||'').replace(/'/g,"\\'")}',true)">
       <div>
-        <div class="di-desc">${i.Description||'—'}</div>
-        <div class="di-sub">${i.DocNo} · ${i.SoldToCompany||'—'} · ${i.SalesRep||'—'}</div>
-        ${i.SerialNumber?`<div class="di-serial">S/N: ${i.SerialNumber}</div>`:''}
-        ${i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped')&&i.Notes?`<div class="di-notes">📝 ${i.Notes}</div>`:''}
+        <div class="di-desc">${group.DocNo||'—'} · ${group.SoldToCompany||'—'}</div>
+        <div class="di-sub">${group.SalesRep||''} · ${count} item${count!==1?'s':''}</div>
+        <div class="di-sub" style="margin-top:2px;color:var(--dim)">${group._items.map(i=>i.Description||(i.ManufacturerPartNumber||'—')).join(' · ')}</div>
       </div>
-      <div>${shippedPill(i.ShippedStatus)}</div>
-    </div>`).join('');
+      <div>${allShipped?'<span class="pill pill-shipped">✓ Shipped</span>':'<span class="pill pill-unshipped">Pending</span>'}</div>
+    </div>`;
+  }).join('');
   document.getElementById('dayModalOverlay').classList.add('open');
 }
 
@@ -1241,6 +1259,7 @@ function _buildItemTable(title) {
     return `<tr onclick="showDetail(${i.ItemID},[${ids.join(',')}])">
       <td class="td-docno">${i.DocNo||'—'}</td>
       <td class="td-desc">${i.Description||'—'}</td>
+      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'—'}</td>
       <td class="td-company">${i.SoldToCompany||'—'}</td>
       <td class="td-serial">${i.SerialNumber||'—'}</td>
       <td>${shippedPill(i.ShippedStatus)}</td>
@@ -1269,6 +1288,7 @@ function _buildItemTable(title) {
       <thead><tr>
         ${th('Doc No','DocNo')}
         ${th('Description','Description')}
+        <th>Part No</th>
         ${th('Company','SoldToCompany')}
         <th>Serial No</th>
         <th>Status</th>
@@ -1316,6 +1336,7 @@ function loadMoreItems() {
   if (tbody) tbody.innerHTML = next.map(i=>`<tr onclick="showDetail(${i.ItemID})">
     <td class="td-docno">${i.DocNo||'—'}</td>
     <td class="td-desc">${i.Description||'—'}</td>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'—'}</td>
     <td class="td-company">${i.SoldToCompany||'—'}</td>
     <td class="td-serial">${i.SerialNumber||'—'}</td>
     <td>${shippedPill(i.ShippedStatus)}</td>
@@ -1558,7 +1579,7 @@ async function showDetail(itemId, contextList) {
   }
 }
 
-async function showDocItems(docId, docNo) {
+async function showDocItems(docId, docNo, fromCal) {
   document.getElementById('dayModalTitle').textContent = `Items — ${docNo}`;
   document.getElementById('dayModalBody').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
   document.getElementById('dayModalOverlay').classList.add('open');
@@ -1572,6 +1593,7 @@ async function showDocItems(docId, docNo) {
       <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID})">
         <div>
           <div class="di-desc">${i.Description||'—'}</div>
+          ${i.ManufacturerPartNumber?`<div class="di-serial" style="color:var(--cyan)">${i.ManufacturerPartNumber}</div>`:''}
           <div class="di-sub">${i.SoldToCompany||''} · Qty ${i.QtyTotal||1} · ${fmt(i.ExtendedPrice)}</div>
           ${i.SerialNumber?`<div class="di-serial">S/N: ${i.SerialNumber}</div>`:''}
         </div>
