@@ -9,7 +9,7 @@ const config = {
 };
 
 const ITEM_FILTER  = `i.LineType = 1`;
-const DATE_FLOOR   = `'2026-01-01'`;
+const DATE_FLOOR   = `'2026-03-01'`;
 
 const ITEM_COLS = `
   i.ID              AS ItemID,
