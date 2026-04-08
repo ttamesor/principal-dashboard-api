@@ -164,7 +164,7 @@ body::before {
 
 /* ── STATS BAR ── */
 .stats-bar {
-  display: grid; grid-template-columns: repeat(7, 1fr);
+  display: grid; grid-template-columns: repeat(6, 1fr);
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
 .stat-cell {
@@ -691,11 +691,6 @@ body.light .notes-box-text { color: #1a202c; }
         <div class="stat-val" id="stat-open-quotes">-</div>
         <div class="stat-sub">in pipeline</div>
       </div>
-      <div class="stat-cell c-red" onclick="switchTab(document.querySelector('[data-tab=noserial]'),'noserial')">
-        <div class="stat-label">No Serial</div>
-        <div class="stat-val" id="stat-noserial">-</div>
-        <div class="stat-sub">delivery set</div>
-      </div>
     </div>
 
     <div class="content-area" id="contentArea">
@@ -843,7 +838,7 @@ async function loadStats() {
     document.getElementById('stat-open-quotes').textContent = openQuotes;
 
     // Mark delivery stats as loading with spinner
-    ['stat-upcoming','stat-overdue','stat-unshipped','stat-noserial'].forEach(id => {
+    ['stat-upcoming','stat-overdue','stat-unshipped'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.textContent = ''; el.classList.add('loading'); }
     });
@@ -871,7 +866,6 @@ async function loadDeliveryStats() {
   fetchStat('upcoming',  'stat-upcoming',  2000);
   fetchStat('overdue',   'stat-overdue',   4000);
   fetchStat('unshipped', 'stat-unshipped', 6000);
-  fetchStat('noserial',  'stat-noserial',  8000);
   document.getElementById('lastUpdated').textContent =
     'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
