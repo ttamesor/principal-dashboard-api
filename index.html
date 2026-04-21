@@ -637,8 +637,10 @@ body.light .notes-box-text { color: #1a202c; }
   <!-- MAIN -->
   <div class="main">
 
+    <!-- FIX 2: theme toggle moved to left of search trio -->
     <div class="topbar">
       <div class="page-title" id="pageTitle">Delivery Calendar</div>
+      <button class="refresh-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">&#9728;&#65039;</button>
       <div class="search-trio">
         <div class="search-wrap-sm">
           <span class="search-icon-sm">&#128290;</span>
@@ -656,7 +658,6 @@ body.light .notes-box-text { color: #1a202c; }
           <button class="search-clear-sm" id="clearDocNo" onclick="clearSearchBox('docno')">&times;</button>
         </div>
       </div>
-      <button class="refresh-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">&#9728;&#65039;</button>
       <button class="refresh-btn" onclick="refreshCurrent()">&#8634; Refresh</button>
     </div>
 
@@ -714,9 +715,9 @@ body.light .notes-box-text { color: #1a202c; }
     <!-- Breadcrumb -->
     <div id="panelBreadcrumb" style="display:none;align-items:center;gap:6px;padding:7px 20px;border-bottom:1px solid var(--border);background:var(--bg3);font-size:0.72rem;font-family:var(--mono);">
       <span style="color:var(--muted);cursor:pointer" onclick="closePanel()" id="breadcrumbTab"></span>
-      <span style="color:var(--muted)">›</span>
+      <span style="color:var(--muted)">&#8250;</span>
       <span style="color:var(--blue);cursor:pointer" onclick="openAllItems()" id="breadcrumbDoc"></span>
-      <span style="color:var(--muted)">›</span>
+      <span style="color:var(--muted)">&#8250;</span>
       <span style="color:var(--dim)" id="breadcrumbItem"></span>
       <!-- Nav arrows -->
       <div style="margin-left:auto;display:flex;gap:4px">
@@ -774,8 +775,8 @@ let calYear      = new Date().getFullYear();
 let calMonth     = new Date().getMonth() + 1;
 let calData      = [];
 let calView      = 'week';
-let calDocTypes  = new Set(['ORDER', 'QUOTE']); // toggle which doc types show on calendar
-let itemDocTypes = new Set(['ORDER', 'QUOTE']); // toggle which doc types show on item tables
+let calDocTypes  = new Set(['ORDER', 'QUOTE']);
+let itemDocTypes = new Set(['ORDER', 'QUOTE']);
 let searchTimeout = null;
 const calCache   = {};
 let calWeekStart = getWeekStart(new Date()).getDate();
@@ -987,7 +988,6 @@ function renderCalendar() {
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const now    = new Date();
   const byDay  = {};
-  // CHANGE 3: filter by selected doc types
   calData.filter(item => calDocTypes.has(item.DocType)).forEach(item => {
     const key = new Date(item.DeliveryDate).getDate();
     if (!byDay[key]) byDay[key] = [];
@@ -1051,7 +1051,6 @@ function renderWeekView() {
 
   const byDate = {};
   const addItems = (items) => {
-    // CHANGE 4: filter by selected doc types
     items.filter(i => calDocTypes.has(i.DocType)).forEach(item => {
       const d   = new Date(item.DeliveryDate);
       const key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
@@ -1123,18 +1122,18 @@ function renderWeekView() {
   })).then(renderFinal).catch(renderFinal);
 }
 
-// CHANGE 2: legendHtml now includes Orders/Quotes checkboxes
+// FIX 3: Quotes checkbox is now first, then Orders
 function legendHtml() {
   const ordChk = calDocTypes.has('ORDER') ? 'checked' : '';
   const qteChk = calDocTypes.has('QUOTE') ? 'checked' : '';
   return `<div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto;flex-wrap:wrap">
     <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none">
-      <input type="checkbox" ${ordChk} onchange="toggleCalDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
-      <span>Orders</span>
-    </label>
-    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none">
       <input type="checkbox" ${qteChk} onchange="toggleCalDocType('QUOTE',this.checked)" style="accent-color:var(--purple)">
       <span>Quotes</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none">
+      <input type="checkbox" ${ordChk} onchange="toggleCalDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
+      <span>Orders</span>
     </label>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Shipped</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--amber);display:inline-block"></span>Pending</span>
@@ -1142,7 +1141,6 @@ function legendHtml() {
   </div>`;
 }
 
-// CHANGE 1: toggle handler
 function toggleCalDocType(type, checked) {
   if (checked) calDocTypes.add(type);
   else calDocTypes.delete(type);
@@ -1288,18 +1286,19 @@ function _buildItemTable(title) {
   }).join('');
   };
 
+  // FIX 3: Quotes checkbox first, then Orders in filter bar
   area.innerHTML = `
     <div class="section-header">
       <div class="section-title">${title}</div>
     </div>
     <div class="filter-bar">
       <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.82rem;color:var(--text)">
-        <input type="checkbox" ${itemDocTypes.has('ORDER')?'checked':''} onchange="toggleItemDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
-        <span>Orders</span>
-      </label>
-      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.82rem;color:var(--text)">
         <input type="checkbox" ${itemDocTypes.has('QUOTE')?'checked':''} onchange="toggleItemDocType('QUOTE',this.checked)" style="accent-color:var(--purple)">
         <span>Quotes</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.82rem;color:var(--text)">
+        <input type="checkbox" ${itemDocTypes.has('ORDER')?'checked':''} onchange="toggleItemDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
+        <span>Orders</span>
       </label>
       <div style="width:1px;height:20px;background:var(--border2);margin:0 4px"></div>
       <select class="filter-select" id="filterRep" onchange="_buildItemTable('${title}')">
@@ -1732,11 +1731,11 @@ window.addEventListener('popstate', (e) => {
   }
 });
 
-// -- Theme --
+// FIX 1: use innerHTML so emoji entities render correctly
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
   const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = isLight ? '&#127769;&#65039;' : '&#9728;&#65039;';
+  if (btn) btn.innerHTML = isLight ? '&#127769;&#65039;' : '&#9728;&#65039;';
   try { localStorage.setItem('pc_theme', isLight ? 'light' : 'dark'); } catch(_) {}
 }
 
@@ -1744,7 +1743,7 @@ try {
   if (localStorage.getItem('pc_theme') === 'light') {
     document.body.classList.add('light');
     const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = '&#127769;&#65039;';
+    if (btn) btn.innerHTML = '&#127769;&#65039;';
   }
 } catch(_) {}
 
