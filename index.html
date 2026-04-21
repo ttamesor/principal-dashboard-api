@@ -59,7 +59,7 @@ body::before {
   overflow: hidden;
 }
 
-/* ── SIDEBAR ── */
+/* -- SIDEBAR -- */
 .sidebar {
   background: var(--bg2);
   border-right: 1px solid var(--border);
@@ -121,10 +121,10 @@ body::before {
   font-size: 0.7rem; font-family: var(--mono); color: var(--muted); flex-shrink: 0;
 }
 
-/* ── MAIN ── */
+/* -- MAIN -- */
 .main { display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
 
-/* ── TOPBAR ── */
+/* -- TOPBAR -- */
 .topbar {
   padding: 14px 24px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 12px; flex-shrink: 0; background: var(--bg2);
@@ -162,7 +162,7 @@ body::before {
 }
 .refresh-btn:hover { background: var(--bg4); color: var(--text); }
 
-/* ── STATS BAR ── */
+/* -- STATS BAR -- */
 .stats-bar {
   display: grid; grid-template-columns: repeat(6, 1fr);
   border-bottom: 1px solid var(--border); flex-shrink: 0;
@@ -202,12 +202,12 @@ body::before {
 .stat-cell.c-purple .stat-val{ color: var(--purple); }
 .stat-sub { font-size: 0.7rem; color: var(--dim); margin-top: 4px; }
 
-/* ── CONTENT ── */
+/* -- CONTENT -- */
 .content-area { flex: 1; overflow-y: auto; min-height: 0; padding: 20px 24px; }
 .content-area::-webkit-scrollbar { width: 4px; }
 .content-area::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
 
-/* ── CALENDAR ── */
+/* -- CALENDAR -- */
 .cal-nav {
   display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
 }
@@ -241,7 +241,7 @@ body::before {
 .cal-dot.overdue   { background: var(--red); }
 .cal-count { position: absolute; bottom: 5px; right: 6px; font-size: 0.6rem; font-family: var(--mono); color: var(--muted); }
 
-/* ── WEEK VIEW ── */
+/* -- WEEK VIEW -- */
 .week-grid {
   display: grid; grid-template-columns: repeat(7, 1fr);
   gap: 6px; height: calc(100vh - 220px);
@@ -279,7 +279,7 @@ body::before {
 .week-item-serial { font-size: 0.7rem; font-family: var(--mono); color: var(--cyan); margin-top: 2px; }
 .week-empty { font-size: 0.75rem; color: var(--muted); text-align: center; padding: 16px 8px; font-family: var(--mono); }
 
-/* ── SECTION HEADER ── */
+/* -- SECTION HEADER -- */
 .section-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
@@ -287,7 +287,7 @@ body::before {
 .section-title { font-size: 0.83rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--dim); }
 .section-count { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
-/* ── ITEM TABLE ── */
+/* -- ITEM TABLE -- */
 .item-table { width: 100%; border-collapse: collapse; }
 .item-table th {
   text-align: left; font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase;
@@ -373,7 +373,7 @@ body::before {
 .item-table th.sortable:hover,
 .doc-table th.sortable:hover { color: var(--text); }
 .sort-arrow { margin-left: 4px; opacity: 0.4; font-size: 0.55rem; }
-th.sort-asc .sort-arrow  { opacity: 1; content: '▲'; }
+th.sort-asc .sort-arrow  { opacity: 1; content: 'up'; }
 th.sort-desc .sort-arrow { opacity: 1; }
 
 /* Load more */
@@ -413,7 +413,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── DETAIL PANEL ── */
+/* -- DETAIL PANEL -- */
 .panel-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
   z-index: 200; opacity: 0; visibility: hidden; transition: all 0.2s;
@@ -478,7 +478,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
   padding-bottom: 6px; border-bottom: 1px solid var(--border);
 }
 
-/* ── DAY MODAL ── */
+/* -- DAY MODAL -- */
 .day-modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
   z-index: 300; display: flex; align-items: center; justify-content: center;
@@ -517,7 +517,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
 .di-serial { font-family: var(--mono); font-size: 0.73rem; color: var(--cyan); margin-top: 2px; }
 .di-notes  { font-size: 0.72rem; color: var(--amber); margin-top: 3px; line-height: 1.4; }
 
-/* ── DOC TABLE ── */
+/* -- DOC TABLE -- */
 .doc-table { width: 100%; border-collapse: collapse; }
 .doc-table th {
   text-align: left; font-size: 0.65rem; font-family: var(--mono); text-transform: uppercase;
@@ -530,7 +530,7 @@ th.sort-desc .sort-arrow { opacity: 1; }
 .progress-bar { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-top: 3px; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan)); border-radius: 2px; transition: width 0.5s ease; }
 
-/* ── LIGHT MODE ── */
+/* -- LIGHT MODE -- */
 body.light {
   --bg:      #f0f4f8;
   --bg2:     #e4eaf2;
@@ -556,7 +556,7 @@ body.light .filter-select   { background: #ffffff; color: #1a202c; color-scheme:
 body.light body::before { opacity: 0; }
 body.light .notes-box-text { color: #1a202c; }
 
-/* ── MOBILE ── */
+/* -- MOBILE -- */
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
@@ -583,7 +583,7 @@ body.light .notes-box-text { color: #1a202c; }
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-logo">
-        <div class="brand-icon">❄</div>
+        <div class="brand-icon">&#10052;</div>
         <div>
           <div class="brand-name">Principal Climate</div>
         </div>
@@ -594,44 +594,44 @@ body.light .notes-box-text { color: #1a202c; }
     <nav class="nav-area">
       <div class="nav-section-label">Deliveries</div>
       <button class="nav-btn active" data-tab="calendar" onclick="switchTab(this,'calendar')">
-        <span class="nav-icon">📅</span> Calendar
+        <span class="nav-icon">&#128197;</span> Calendar
       </button>
       <button class="nav-btn amber" data-tab="upcoming" onclick="switchTab(this,'upcoming')">
-        <span class="nav-icon">🚚</span> Upcoming
+        <span class="nav-icon">&#128666;</span> Upcoming
       </button>
       <button class="nav-btn danger" data-tab="overdue" onclick="switchTab(this,'overdue')">
-        <span class="nav-icon">⚠</span> Overdue
+        <span class="nav-icon">&#9888;</span> Overdue
       </button>
 
       <div class="nav-section-label">Shipping</div>
       <button class="nav-btn" data-tab="unshipped" onclick="switchTab(this,'unshipped')">
-        <span class="nav-icon">📦</span> Unshipped
+        <span class="nav-icon">&#128230;</span> Unshipped
       </button>
       <button class="nav-btn green" data-tab="shipped" onclick="switchTab(this,'shipped')">
-        <span class="nav-icon">✓</span> Shipped
+        <span class="nav-icon">&#10003;</span> Shipped
       </button>
       <button class="nav-btn danger" data-tab="noserial" onclick="switchTab(this,'noserial')">
-        <span class="nav-icon">⚠</span> No Serial No.
+        <span class="nav-icon">&#9888;</span> No Serial No.
       </button>
 
       <div class="nav-section-label">Orders</div>
       <button class="nav-btn" data-tab="new-orders" onclick="switchTab(this,'new-orders')">
-        <span class="nav-icon">🆕</span> New Orders
+        <span class="nav-icon">&#127381;</span> New Orders
       </button>
       <button class="nav-btn green" data-tab="completed-orders" onclick="switchTab(this,'completed-orders')">
-        <span class="nav-icon">✓</span> Completed
+        <span class="nav-icon">&#10003;</span> Completed
       </button>
 
       <div class="nav-section-label">Quotes</div>
       <button class="nav-btn" data-tab="open-quotes" onclick="switchTab(this,'open-quotes')">
-        <span class="nav-icon">◈</span> Open Quotes
+        <span class="nav-icon">&#10216;</span> Open Quotes
       </button>
       <button class="nav-btn green" data-tab="won-quotes" onclick="switchTab(this,'won-quotes')">
-        <span class="nav-icon">★</span> Won Quotes
+        <span class="nav-icon">&#9733;</span> Won Quotes
       </button>
     </nav>
 
-    <div class="sidebar-footer" id="lastUpdated">Connecting…</div>
+    <div class="sidebar-footer" id="lastUpdated">Connecting&hellip;</div>
   </aside>
 
   <!-- MAIN -->
@@ -641,23 +641,23 @@ body.light .notes-box-text { color: #1a202c; }
       <div class="page-title" id="pageTitle">Delivery Calendar</div>
       <div class="search-trio">
         <div class="search-wrap-sm">
-          <span class="search-icon-sm">🔢</span>
-          <input class="search-input-sm" id="searchSerial" placeholder="Serial number…" oninput="handleSearch('serial',this.value)" autocomplete="off">
-          <button class="search-clear-sm" id="clearSerial" onclick="clearSearchBox('serial')">✕</button>
+          <span class="search-icon-sm">&#128290;</span>
+          <input class="search-input-sm" id="searchSerial" placeholder="Serial number&hellip;" oninput="handleSearch('serial',this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearSerial" onclick="clearSearchBox('serial')">&times;</button>
         </div>
         <div class="search-wrap-sm">
-          <span class="search-icon-sm">🏢</span>
-          <input class="search-input-sm" id="searchCompany" placeholder="Company…" oninput="handleSearch('company',this.value)" autocomplete="off">
-          <button class="search-clear-sm" id="clearCompany" onclick="clearSearchBox('company')">✕</button>
+          <span class="search-icon-sm">&#127970;</span>
+          <input class="search-input-sm" id="searchCompany" placeholder="Company&hellip;" oninput="handleSearch('company',this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearCompany" onclick="clearSearchBox('company')">&times;</button>
         </div>
         <div class="search-wrap-sm">
-          <span class="search-icon-sm">📄</span>
-          <input class="search-input-sm" id="searchDocNo" placeholder="Doc number…" oninput="handleSearch('docno',this.value)" autocomplete="off">
-          <button class="search-clear-sm" id="clearDocNo" onclick="clearSearchBox('docno')">✕</button>
+          <span class="search-icon-sm">&#128196;</span>
+          <input class="search-input-sm" id="searchDocNo" placeholder="Doc number&hellip;" oninput="handleSearch('docno',this.value)" autocomplete="off">
+          <button class="search-clear-sm" id="clearDocNo" onclick="clearSearchBox('docno')">&times;</button>
         </div>
       </div>
-      <button class="refresh-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">☀️</button>
-      <button class="refresh-btn" onclick="refreshCurrent()">↺ Refresh</button>
+      <button class="refresh-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark mode">&#9728;&#65039;</button>
+      <button class="refresh-btn" onclick="refreshCurrent()">&#8634; Refresh</button>
     </div>
 
     <div class="stats-bar">
@@ -709,7 +709,7 @@ body.light .notes-box-text { color: #1a202c; }
         <div class="panel-desc" id="pDesc"></div>
         <div class="panel-company" id="pCompany"></div>
       </div>
-      <button class="panel-close" onclick="closePanel()">✕</button>
+      <button class="panel-close" onclick="closePanel()">&times;</button>
     </div>
     <!-- Breadcrumb -->
     <div id="panelBreadcrumb" style="display:none;align-items:center;gap:6px;padding:7px 20px;border-bottom:1px solid var(--border);background:var(--bg3);font-size:0.72rem;font-family:var(--mono);">
@@ -720,14 +720,14 @@ body.light .notes-box-text { color: #1a202c; }
       <span style="color:var(--dim)" id="breadcrumbItem"></span>
       <!-- Nav arrows -->
       <div style="margin-left:auto;display:flex;gap:4px">
-        <button id="panelPrev" onclick="navigatePanel(-1)" title="Previous item" style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">‹</button>
-        <button id="panelNext" onclick="navigatePanel(1)"  title="Next item"     style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">›</button>
+        <button id="panelPrev" onclick="navigatePanel(-1)" title="Previous item" style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">&#8249;</button>
+        <button id="panelNext" onclick="navigatePanel(1)"  title="Next item"     style="background:var(--bg4);border:1px solid var(--border2);border-radius:5px;color:var(--dim);width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.8rem;transition:all 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='var(--dim)'">&#8250;</button>
       </div>
     </div>
     <div id="panelAllItems" onclick="openAllItems()" style="display:none;align-items:center;gap:8px;padding:9px 20px;border-bottom:1px solid var(--border);background:rgba(59,130,246,0.06);cursor:pointer;transition:background 0.15s;font-size:0.78rem;color:var(--blue);font-weight:500" onmouseover="this.style.background='rgba(59,130,246,0.12)'" onmouseout="this.style.background='rgba(59,130,246,0.06)'">
-      <span style="font-size:1rem">📋</span>
+      <span style="font-size:1rem">&#128203;</span>
       <span id="panelAllItemsLabel">View all items on this document</span>
-      <span style="margin-left:auto;font-size:0.7rem;opacity:0.6">↗</span>
+      <span style="margin-left:auto;font-size:0.7rem;opacity:0.6">&#8599;</span>
     </div>
     <div class="panel-body" id="panelBody"></div>
   </div>
@@ -738,7 +738,7 @@ body.light .notes-box-text { color: #1a202c; }
   <div class="day-modal" onclick="event.stopPropagation()">
     <div class="day-modal-head">
       <div class="day-modal-title" id="dayModalTitle"></div>
-      <button class="day-modal-close" onclick="closeDayModal()">✕</button>
+      <button class="day-modal-close" onclick="closeDayModal()">&times;</button>
     </div>
     <div class="day-modal-body" id="dayModalBody"></div>
   </div>
@@ -747,7 +747,7 @@ body.light .notes-box-text { color: #1a202c; }
 <script>
 const API = '/api/data';
 
-// ── Field label map from QW customisations ──────────────────────────────────
+// -- Field label map from QW customisations --
 const ITEM_LABELS = {
   Description:            'Description',
   ManufacturerPartNumber: 'Manufacturer Part #',
@@ -768,12 +768,13 @@ const HEADER_LABELS = {
   CustomText05: 'Xero Invoice #',
 };
 
-// ── State ───────────────────────────────────────────────────────────────────
+// -- State --
 let currentTab   = 'calendar';
 let calYear      = new Date().getFullYear();
 let calMonth     = new Date().getMonth() + 1;
 let calData      = [];
 let calView      = 'week';
+let calDocTypes  = new Set(['ORDER', 'QUOTE']); // toggle which doc types show on calendar
 let searchTimeout = null;
 const calCache   = {};
 let calWeekStart = getWeekStart(new Date()).getDate();
@@ -781,14 +782,14 @@ let calWeekStart = getWeekStart(new Date()).getDate();
 // Pagination state per tab
 const pageState = {};
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// -- Helpers --
 function fmt(v)     { return parseFloat(v||0).toLocaleString('en-GB',{style:'currency',currency:'GBP',maximumFractionDigits:0}); }
 function fmtDate(d) {
-  if (!d) return '—';
+  if (!d) return '-';
   return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 }
 function fmtShort(d) {
-  if (!d) return '—';
+  if (!d) return '-';
   return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
 }
 function daysClass(n) {
@@ -798,7 +799,7 @@ function daysClass(n) {
   return 'days-ok';
 }
 function daysLabel(n) {
-  if (n===null||n===undefined) return '—';
+  if (n===null||n===undefined) return '-';
   if (n===0) return 'Today';
   if (n===1) return 'Tomorrow';
   if (n<0)   return Math.abs(n)+'d overdue';
@@ -806,7 +807,7 @@ function daysLabel(n) {
 }
 function shippedPill(s) {
   if (!s) return '<span class="pill pill-unshipped">Unshipped</span>';
-  if (s.toLowerCase().includes('shipped')) return '<span class="pill pill-shipped">✓ '+s+'</span>';
+  if (s.toLowerCase().includes('shipped')) return '<span class="pill pill-shipped">&#10003; '+s+'</span>';
   return '<span class="pill pill-unshipped">'+(s||'Unshipped')+'</span>';
 }
 function getWeekStart(date) {
@@ -816,7 +817,7 @@ function getWeekStart(date) {
   return d;
 }
 
-// ── API ──────────────────────────────────────────────────────────────────────
+// -- API --
 async function apiFetch(params) {
   const url = API+'?'+new URLSearchParams(params).toString();
   const res  = await fetch(url);
@@ -824,7 +825,7 @@ async function apiFetch(params) {
   return res.json();
 }
 
-// ── Stats ────────────────────────────────────────────────────────────────────
+// -- Stats --
 async function loadStats() {
   try {
     const data = await apiFetch({mode:'stats'});
@@ -837,7 +838,6 @@ async function loadStats() {
     document.getElementById('stat-completed').textContent   = completed;
     document.getElementById('stat-open-quotes').textContent = openQuotes;
 
-    // Mark delivery stats as loading with spinner
     ['stat-upcoming','stat-overdue','stat-unshipped'].forEach(id => {
       const el = document.getElementById(id);
       if (el) { el.textContent = ''; el.classList.add('loading'); }
@@ -870,28 +870,26 @@ async function loadDeliveryStats() {
     'Updated '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
 }
 
-// ── Auto-refresh every 5 minutes ─────────────────────────────────────────────
+// -- Auto-refresh every 5 minutes --
 setInterval(() => {
   loadStats();
-  // Bust cache for current month so it refreshes
   const key = calYear+'-'+calMonth;
   delete calCache[key];
   if (currentTab === 'calendar') loadCalendar();
 }, 5 * 60 * 1000);
 
-// ── Tab switching ─────────────────────────────────────────────────────────────
+// -- Tab switching --
 function switchTab(btn, tab) {
   currentTab = tab;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   const titles = {
-    calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue — Not Shipped',
+    calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue - Not Shipped',
     unshipped:'Unshipped Items', shipped:'Shipped Items', noserial:'Missing Serial Numbers',
     'new-orders':'New Orders', 'completed-orders':'Completed Orders',
     'open-quotes':'Open Quotes', 'won-quotes':'Won Quotes', search:'Search Results'
   };
   document.getElementById('pageTitle').textContent = titles[tab]||tab;
-  // Update URL without page reload
   try {
     const url = new URL(window.location.href);
     url.searchParams.set('tab', tab);
@@ -910,11 +908,11 @@ async function loadTab(tab) {
     } else if (tab==='upcoming') {
       const data = await apiFetch({mode:'upcoming'});
       updateStatBadge('stat-upcoming', data.length);
-      renderItemTable(data,'Upcoming Deliveries — next 90 days');
+      renderItemTable(data,'Upcoming Deliveries - next 90 days');
     } else if (tab==='overdue') {
       const data = await apiFetch({mode:'overdue'});
       updateStatBadge('stat-overdue', data.length);
-      renderItemTable(data,'Overdue — past delivery date, not shipped');
+      renderItemTable(data,'Overdue - past delivery date, not shipped');
     } else if (tab==='unshipped') {
       const data = await apiFetch({mode:'unshipped'});
       updateStatBadge('stat-unshipped', data.length);
@@ -934,13 +932,13 @@ async function loadTab(tab) {
       renderDocTable(await apiFetch({mode:'list',docType:'QUOTE',status:'Won',page:1}),'Won Quotes');
     }
   } catch(e) {
-    area.innerHTML = `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">Error: ${e.message}</div></div>`;
+    area.innerHTML = `<div class="empty"><div class="empty-icon">&#9888;</div><div class="empty-text">Error: ${e.message}</div></div>`;
   }
 }
 
 function refreshCurrent() { loadTab(currentTab); loadStats(); }
 
-// ── Calendar ──────────────────────────────────────────────────────────────────
+// -- Calendar --
 async function loadCalendar() {
   const key = calYear+'-'+calMonth;
   if (!calCache[key]) {
@@ -988,7 +986,8 @@ function renderCalendar() {
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const now    = new Date();
   const byDay  = {};
-  calData.forEach(item => {
+  // CHANGE 3: filter by selected doc types
+  calData.filter(item => calDocTypes.has(item.DocType)).forEach(item => {
     const key = new Date(item.DeliveryDate).getDate();
     if (!byDay[key]) byDay[key] = [];
     byDay[key].push(item);
@@ -1019,11 +1018,11 @@ function renderCalendar() {
   for (let d=1;d<=remaining;d++) cells+=`<div class="cal-day other-month"><div class="cal-day-num">${d}</div></div>`;
   area.innerHTML = `
     <div class="cal-nav">
-      <button class="cal-nav-btn" onclick="calNav(-1)">◀</button>
+      <button class="cal-nav-btn" onclick="calNav(-1)">&#9664;</button>
       <div class="cal-month-title">${months[calMonth-1]} ${calYear}</div>
-      <button class="cal-nav-btn" onclick="calNav(1)">▶</button>
+      <button class="cal-nav-btn" onclick="calNav(1)">&#9654;</button>
       <button class="cal-nav-btn" onclick="calToday()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">Today</button>
-      <button class="cal-nav-btn" id="calViewToggle" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">📆 Week view</button>
+      <button class="cal-nav-btn" id="calViewToggle" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">&#128198; Week view</button>
       ${legendHtml()}
     </div>
     <div class="cal-grid">
@@ -1047,12 +1046,12 @@ function renderWeekView() {
   const fixed = getWeekStart(ws);
   const days  = Array.from({length:7},(_,i)=>{ const d=new Date(fixed); d.setDate(fixed.getDate()+i); return d; });
   const weekLabel = days[0].toLocaleDateString('en-GB',{day:'numeric',month:'short'})+
-    ' – '+days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    ' - '+days[6].toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
 
-  // Collect data across any month boundaries
   const byDate = {};
   const addItems = (items) => {
-    items.forEach(item => {
+    // CHANGE 4: filter by selected doc types
+    items.filter(i => calDocTypes.has(i.DocType)).forEach(item => {
       const d   = new Date(item.DeliveryDate);
       const key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
       if (!byDate[key]) byDate[key] = [];
@@ -1068,7 +1067,6 @@ function renderWeekView() {
       const items   = byDate[key]||[];
       const isToday = d.toDateString()===now.toDateString();
       const isPast  = d<new Date(now.getFullYear(),now.getMonth(),now.getDate());
-      // Group items by DocNo
       const byDoc = {};
       items.forEach(i => {
         if (!byDoc[i.DocNo]) byDoc[i.DocNo] = { ...i, _items: [] };
@@ -1079,10 +1077,10 @@ function renderWeekView() {
         const allShipped = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
         const color = allShipped ? 'var(--green)' : isPast ? 'var(--red)' : 'var(--amber)';
         const count = group._items.length;
-        const pill  = allShipped ? '<span class="pill pill-shipped">✓ Shipped</span>' : isPast ? '<span class="pill pill-overdue">Overdue</span>' : '<span class="pill pill-unshipped">Pending</span>';
+        const pill  = allShipped ? '<span class="pill pill-shipped">&#10003; Shipped</span>' : isPast ? '<span class="pill pill-overdue">Overdue</span>' : '<span class="pill pill-unshipped">Pending</span>';
         return `<div class="week-item" onclick="closeDayModal();showDocItems(${group.DocID},'${(group.DocNo||'').replace(/'/g,"\\'")}',true)" style="border-left:3px solid ${color}">
-          <div class="week-item-desc">${group.DocNo||'—'} · ${group.SoldToCompany||''}</div>
-          <div class="week-item-sub">${count} item${count!==1?'s':''} · ${group.SalesRep||''}</div>
+          <div class="week-item-desc">${group.DocNo||'-'} &middot; ${group.SoldToCompany||''}</div>
+          <div class="week-item-sub">${count} item${count!==1?'s':''} &middot; ${group.SalesRep||''}</div>
           <div style="margin-top:4px">${pill}</div>
         </div>`;
       }).join('')||`<div class="week-empty">No deliveries</div>`;
@@ -1097,7 +1095,6 @@ function renderWeekView() {
     }).join('');
   };
 
-  // Load extra months for boundary weeks then render
   const extraMonths = [];
   days.forEach(d => {
     const m=d.getMonth()+1, y=d.getFullYear();
@@ -1107,11 +1104,11 @@ function renderWeekView() {
   const renderFinal = () => {
     area.innerHTML = `
       <div class="cal-nav" style="margin-bottom:12px">
-        <button class="cal-nav-btn" onclick="calNav(-1)">◀</button>
+        <button class="cal-nav-btn" onclick="calNav(-1)">&#9664;</button>
         <div class="cal-month-title">${weekLabel}</div>
-        <button class="cal-nav-btn" onclick="calNav(1)">▶</button>
+        <button class="cal-nav-btn" onclick="calNav(1)">&#9654;</button>
         <button class="cal-nav-btn" onclick="calToday()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">Today</button>
-        <button class="cal-nav-btn" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">📅 Month view</button>
+        <button class="cal-nav-btn" onclick="toggleCalView()" style="width:auto;padding:0 10px;font-size:0.72rem;font-family:var(--mono)">&#128197; Month view</button>
         ${legendHtml()}
       </div>
       <div class="week-grid">${buildCols()}</div>`;
@@ -1125,12 +1122,31 @@ function renderWeekView() {
   })).then(renderFinal).catch(renderFinal);
 }
 
+// CHANGE 2: legendHtml now includes Orders/Quotes checkboxes
 function legendHtml() {
-  return `<div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto">
+  const ordChk = calDocTypes.has('ORDER') ? 'checked' : '';
+  const qteChk = calDocTypes.has('QUOTE') ? 'checked' : '';
+  return `<div style="display:flex;gap:16px;align-items:center;font-size:0.72rem;color:var(--dim);margin-left:auto;flex-wrap:wrap">
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none">
+      <input type="checkbox" ${ordChk} onchange="toggleCalDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
+      <span>Orders</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none">
+      <input type="checkbox" ${qteChk} onchange="toggleCalDocType('QUOTE',this.checked)" style="accent-color:var(--purple)">
+      <span>Quotes</span>
+    </label>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Shipped</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--amber);display:inline-block"></span>Pending</span>
     <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--red);display:inline-block"></span>Overdue</span>
   </div>`;
+}
+
+// CHANGE 1: toggle handler
+function toggleCalDocType(type, checked) {
+  if (checked) calDocTypes.add(type);
+  else calDocTypes.delete(type);
+  if (calView === 'week') renderWeekView();
+  else renderCalendar();
 }
 
 function calNav(dir) {
@@ -1152,10 +1168,9 @@ function calToday() {
 }
 
 function showDayItems(day) {
-  const items = calData.filter(i=>new Date(i.DeliveryDate).getDate()===day);
+  const items = calData.filter(i=>new Date(i.DeliveryDate).getDate()===day&&calDocTypes.has(i.DocType));
   const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  // Group by DocNo
   const byDoc = {};
   items.forEach(i => {
     if (!byDoc[i.DocNo]) byDoc[i.DocNo] = { ...i, _items: [] };
@@ -1164,18 +1179,18 @@ function showDayItems(day) {
   const docGroups = Object.values(byDoc);
 
   document.getElementById('dayModalTitle').textContent =
-    `${day} ${months[calMonth-1]} ${calYear} — ${docGroups.length} order${docGroups.length!==1?'s':''}`;
+    `${day} ${months[calMonth-1]} ${calYear} - ${docGroups.length} order${docGroups.length!==1?'s':''}`;
 
   document.getElementById('dayModalBody').innerHTML = docGroups.map(group => {
     const allShipped = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
     const count = group._items.length;
     return `<div class="day-item-row" onclick="closeDayModal();showDocItems(${group.DocID},'${(group.DocNo||'').replace(/'/g,"\\'")}',true)">
       <div>
-        <div class="di-desc">${group.DocNo||'—'} · ${group.SoldToCompany||'—'}</div>
-        <div class="di-sub">${group.SalesRep||''} · ${count} item${count!==1?'s':''}</div>
-        <div class="di-sub" style="margin-top:2px;color:var(--dim)">${group._items.map(i=>i.Description||(i.ManufacturerPartNumber||'—')).join(' · ')}</div>
+        <div class="di-desc">${group.DocNo||'-'} &middot; ${group.SoldToCompany||'-'}</div>
+        <div class="di-sub">${group.SalesRep||''} &middot; ${count} item${count!==1?'s':''}</div>
+        <div class="di-sub" style="margin-top:2px;color:var(--dim)">${group._items.map(i=>i.Description||(i.ManufacturerPartNumber||'-')).join(' &middot; ')}</div>
       </div>
-      <div>${allShipped?'<span class="pill pill-shipped">✓ Shipped</span>':'<span class="pill pill-unshipped">Pending</span>'}</div>
+      <div>${allShipped?'<span class="pill pill-shipped">&#10003; Shipped</span>':'<span class="pill pill-unshipped">Pending</span>'}</div>
     </div>`;
   }).join('');
   document.getElementById('dayModalOverlay').classList.add('open');
@@ -1186,15 +1201,14 @@ function closeDayModal(e) {
     document.getElementById('dayModalOverlay').classList.remove('open');
 }
 
-// ── Item table state ─────────────────────────────────────────────────────────
-// Panel navigation context
-let _panelContext = []; // list of itemIDs currently visible
-let _panelIndex   = -1; // current position in that list
+// -- Item table state --
+let _panelContext = [];
+let _panelIndex   = -1;
 
-let _itemData       = [];   // full unfiltered dataset
-let _itemFiltered   = [];   // after rep + company filter
+let _itemData       = [];
+let _itemFiltered   = [];
 let _itemSortCol    = 'DeliveryDate';
-let _itemSortDir    = 1;    // 1=asc, -1=desc
+let _itemSortDir    = 1;
 
 function renderItemTable(data, title) {
   _itemData     = data;
@@ -1206,31 +1220,26 @@ function renderItemTable(data, title) {
 function _buildItemTable(title) {
   const area = document.getElementById('contentArea');
   if (!_itemData.length) {
-    area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No items found</div></div>`;
+    area.innerHTML = `<div class="empty"><div class="empty-icon">&#128205;</div><div class="empty-text">No items found</div></div>`;
     return;
   }
 
-  // Save focus state before re-render
   const focusedId  = document.activeElement?.id;
   const cursorPos  = (focusedId === 'filterCompany')
     ? document.getElementById('filterCompany')?.selectionStart
     : null;
 
-  // Build rep list from full dataset
   const reps = [...new Set(_itemData.map(i=>i.SalesRep||'').filter(Boolean))].sort();
 
-  // Read current filter values (preserve across re-renders)
   const repVal  = document.getElementById('filterRep')?.value  || '';
   const coVal   = (document.getElementById('filterCompany')?.value || '').toLowerCase().trim();
 
-  // Apply filters
   _itemFiltered = _itemData.filter(i => {
     if (repVal && (i.SalesRep||'') !== repVal) return false;
     if (coVal  && !(i.SoldToCompany||'').toLowerCase().includes(coVal)) return false;
     return true;
   });
 
-  // Apply sort
   const col = _itemSortCol;
   _itemFiltered.sort((a,b) => {
     let av = a[col], bv = b[col];
@@ -1244,8 +1253,8 @@ function _buildItemTable(title) {
   const visible = _itemFiltered.slice(0, PAGE);
 
   const arrow = (col) => {
-    if (_itemSortCol !== col) return '<span class="sort-arrow">↕</span>';
-    return _itemSortDir===1?'<span class="sort-arrow">▲</span>':'<span class="sort-arrow">▼</span>';
+    if (_itemSortCol !== col) return '<span class="sort-arrow">&#8597;</span>';
+    return _itemSortDir===1?'<span class="sort-arrow">&#9650;</span>':'<span class="sort-arrow">&#9660;</span>';
   };
 
   const th = (label, col) =>
@@ -1257,15 +1266,15 @@ function _buildItemTable(title) {
     return items.map(i => {
     const days = i.DeliveryDays;
     return `<tr onclick="showDetail(${i.ItemID},[${ids.join(',')}])">
-      <td class="td-docno">${i.DocNo||'—'}</td>
-      <td class="td-desc">${i.Description||'—'}</td>
-      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'—'}</td>
-      <td class="td-company">${i.SoldToCompany||'—'}</td>
-      <td class="td-serial">${i.SerialNumber||'—'}</td>
+      <td class="td-docno">${i.DocNo||'-'}</td>
+      <td class="td-desc">${i.Description||'-'}</td>
+      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'-'}</td>
+      <td class="td-company">${i.SoldToCompany||'-'}</td>
+      <td class="td-serial">${i.SerialNumber||'-'}</td>
       <td>${shippedPill(i.ShippedStatus)}</td>
       <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
       <td class="td-days ${daysClass(days)}">${daysLabel(days)}</td>
-      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'—'}</td>
+      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'-'}</td>
     </tr>`;
   }).join('');
   };
@@ -1279,9 +1288,9 @@ function _buildItemTable(title) {
         <option value="">All reps</option>
         ${reps.map(r=>`<option value="${r}"${r===repVal?'selected':''}>${r}</option>`).join('')}
       </select>
-      <input class="filter-input" id="filterCompany" placeholder="Filter by company…"
+      <input class="filter-input" id="filterCompany" placeholder="Filter by company&hellip;"
         value="${coVal}" oninput="_buildItemTable('${title}')">
-      ${repVal||coVal?`<button class="filter-clear" onclick="clearItemFilters('${title}')">✕ Clear</button>`:''}
+      ${repVal||coVal?`<button class="filter-clear" onclick="clearItemFilters('${title}')">&#10005; Clear</button>`:''}
       <div class="filter-count">${_itemFiltered.length} of ${_itemData.length} items</div>
     </div>
     <table class="item-table">
@@ -1300,7 +1309,6 @@ function _buildItemTable(title) {
     </table>
     ${_itemFiltered.length>PAGE?`<div class="load-more-wrap"><button class="load-more-btn" onclick="loadMoreItems()">Load more (${_itemFiltered.length-PAGE} remaining)</button></div>`:''}`;
 
-  // Restore focus after re-render
   if (focusedId) {
     const el = document.getElementById(focusedId);
     if (el) {
@@ -1334,15 +1342,15 @@ function loadMoreItems() {
   const next  = _itemFiltered.slice(0, currentCount+PAGE);
   const days  = (i) => i.DeliveryDays;
   if (tbody) tbody.innerHTML = next.map(i=>`<tr onclick="showDetail(${i.ItemID})">
-    <td class="td-docno">${i.DocNo||'—'}</td>
-    <td class="td-desc">${i.Description||'—'}</td>
-    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'—'}</td>
-    <td class="td-company">${i.SoldToCompany||'—'}</td>
-    <td class="td-serial">${i.SerialNumber||'—'}</td>
+    <td class="td-docno">${i.DocNo||'-'}</td>
+    <td class="td-desc">${i.Description||'-'}</td>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--cyan)">${i.ManufacturerPartNumber||'-'}</td>
+    <td class="td-company">${i.SoldToCompany||'-'}</td>
+    <td class="td-serial">${i.SerialNumber||'-'}</td>
     <td>${shippedPill(i.ShippedStatus)}</td>
     <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
     <td class="td-days ${daysClass(days(i))}">${daysLabel(days(i))}</td>
-    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'—'}</td>
+    <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'-'}</td>
   </tr>`).join('');
   if (next.length>=_itemFiltered.length) {
     const btn=document.querySelector('.load-more-btn');
@@ -1353,28 +1361,28 @@ function loadMoreItems() {
   }
 }
 
-// ── Doc table ─────────────────────────────────────────────────────────────────
+// -- Doc table --
 function renderDocTable(data, title) {
   const area = document.getElementById('contentArea');
   if (!data.length) {
-    area.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No documents found</div></div>`;
+    area.innerHTML = `<div class="empty"><div class="empty-icon">&#128205;</div><div class="empty-text">No documents found</div></div>`;
     return;
   }
   const rows = data.map(d => {
     const shipped = d.ShippedCount||0, total = d.ItemCount||0;
     const pct = total>0?Math.round((shipped/total)*100):0;
     return `<tr onclick="showDocItems(${d.ID},'${(d.DocNo||'').replace(/'/g,"\\'")}')">
-      <td class="td-docno">${d.DocNo||'—'}</td>
-      <td class="td-desc">${d.DocName||'—'}</td>
-      <td class="td-company">${d.SoldToCompany||'—'}</td>
-      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${d.SalesRep||'—'}</td>
+      <td class="td-docno">${d.DocNo||'-'}</td>
+      <td class="td-desc">${d.DocName||'-'}</td>
+      <td class="td-company">${d.SoldToCompany||'-'}</td>
+      <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${d.SalesRep||'-'}</td>
       <td class="td-date">${fmtShort(d.DocDate)}</td>
       <td style="font-family:var(--mono);font-size:0.75rem;color:var(--green)">${fmt(d.GrandTotal)}</td>
       <td>
         <div style="font-family:var(--mono);font-size:0.68rem;color:var(--dim);margin-bottom:3px">${shipped}/${total} shipped</div>
         <div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:${pct}%"></div></div>
       </td>
-      <td class="td-date">${d.EarliestDelivery?fmtShort(d.EarliestDelivery):'—'}</td>
+      <td class="td-date">${d.EarliestDelivery?fmtShort(d.EarliestDelivery):'-'}</td>
     </tr>`;
   }).join('');
   area.innerHTML = `
@@ -1391,16 +1399,15 @@ function renderDocTable(data, title) {
     </table>`;
 }
 
-// ── Detail panel ──────────────────────────────────────────────────────────────
+// -- Detail panel --
 async function showDetail(itemId, contextList) {
-  // Update nav context if a new list is provided
   if (contextList && contextList.length) {
     _panelContext = contextList;
   }
   _panelIndex = _panelContext.indexOf(Number(itemId));
 
   document.getElementById('panelOverlay').classList.add('open');
-  document.getElementById('pDocNo').textContent   = 'Loading…';
+  document.getElementById('pDocNo').textContent   = 'Loading...';
   document.getElementById('pDesc').textContent    = '';
   document.getElementById('pCompany').textContent = '';
   document.getElementById('panelBody').innerHTML  = '<div class="loader"><div class="spinner"></div></div>';
@@ -1409,24 +1416,21 @@ async function showDetail(itemId, contextList) {
     if (!d) throw new Error('Item not found');
 
     document.getElementById('pDocNo').textContent   = d.DocNo+(d.DocType?' · '+d.DocType:'');
-    document.getElementById('pDesc').textContent    = d.Description||'—';
-    document.getElementById('pCompany').textContent = d.SoldToCompany||'—';
-    // Store HeaderID for "all items" link
+    document.getElementById('pDesc').textContent    = d.Description||'-';
+    document.getElementById('pCompany').textContent = d.SoldToCompany||'-';
     document.getElementById('panelAllItems').dataset.docId  = d.HeaderID||'';
     document.getElementById('panelAllItems').dataset.docNo  = d.DocNo||'';
     document.getElementById('panelAllItems').style.display  = d.HeaderID ? 'flex' : 'none';
 
-    // Breadcrumb
     const bc = document.getElementById('panelBreadcrumb');
     if (bc) {
       bc.style.display = 'flex';
       document.getElementById('breadcrumbTab').textContent  = document.getElementById('pageTitle').textContent||'';
       document.getElementById('breadcrumbDoc').textContent  = d.DocNo||'';
-      document.getElementById('breadcrumbItem').textContent = (d.Description||'').slice(0,30)+((d.Description||'').length>30?'…':'');
+      document.getElementById('breadcrumbItem').textContent = (d.Description||'').slice(0,30)+((d.Description||'').length>30?'...':'');
       document.getElementById('panelAllItems').dataset.docId = d.HeaderID||'';
       document.getElementById('panelAllItems').dataset.docNo = d.DocNo||'';
     }
-    // Nav arrows
     const prev = document.getElementById('panelPrev');
     const next = document.getElementById('panelNext');
     if (prev) prev.style.opacity = _panelIndex > 0 ? '1' : '0.25';
@@ -1435,14 +1439,12 @@ async function showDetail(itemId, contextList) {
     const dDays  = d.DeliveryDays;
     const dClass = dDays===null?'':dDays<0?'red':dDays<=7?'amber':'green';
 
-    // Internal notes get a prominent box if present
     const notesBox = d.InternalNotes ? `
       <div class="notes-box">
         <div class="notes-box-label">Delivery Notes</div>
         <div class="notes-box-text">${d.InternalNotes.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
       </div>` : '';
 
-    // Further Detail (CustomMemo01)
     const furtherDetail = d.FurtherDetail ? `
       <div class="notes-box" style="background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.2)">
         <div class="notes-box-label" style="color:var(--blue)">Further Detail</div>
@@ -1464,19 +1466,19 @@ async function showDetail(itemId, contextList) {
       <div class="detail-grid">
         <div class="detail-cell full">
           <div class="dc-label">Description</div>
-          <div class="dc-val">${d.Description||'—'}</div>
+          <div class="dc-val">${d.Description||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Manufacturer</div>
-          <div class="dc-val">${d.Manufacturer||'—'}</div>
+          <div class="dc-val">${d.Manufacturer||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">${ITEM_LABELS.ManufacturerPartNumber}</div>
-          <div class="dc-val mono">${d.ManufacturerPartNumber||'—'}</div>
+          <div class="dc-val mono">${d.ManufacturerPartNumber||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">${ITEM_LABELS.QtyTotal}</div>
-          <div class="dc-val">${d.QtyTotal||'—'}</div>
+          <div class="dc-val">${d.QtyTotal||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">${ITEM_LABELS.UnitPrice}</div>
@@ -1513,7 +1515,7 @@ async function showDetail(itemId, contextList) {
         </div>
         <div class="detail-cell">
           <div class="dc-label">Supplier</div>
-          <div class="dc-val">${d.Vendor||'—'}</div>
+          <div class="dc-val">${d.Vendor||'-'}</div>
         </div>
       </div>
 
@@ -1521,7 +1523,7 @@ async function showDetail(itemId, contextList) {
       <div class="detail-grid">
         <div class="detail-cell">
           <div class="dc-label">Doc No</div>
-          <div class="dc-val blue">${d.DocNo||'—'}</div>
+          <div class="dc-val blue">${d.DocNo||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Doc Date</div>
@@ -1529,7 +1531,7 @@ async function showDetail(itemId, contextList) {
         </div>
         <div class="detail-cell">
           <div class="dc-label">Type / Status</div>
-          <div class="dc-val">${d.DocType||'—'} · ${d.DocStatus||'—'}</div>
+          <div class="dc-val">${d.DocType||'-'} &middot; ${d.DocStatus||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Total Value</div>
@@ -1537,11 +1539,11 @@ async function showDetail(itemId, contextList) {
         </div>
         <div class="detail-cell full">
           <div class="dc-label">Doc Name</div>
-          <div class="dc-val">${d.DocName||'—'}</div>
+          <div class="dc-val">${d.DocName||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Sales Rep</div>
-          <div class="dc-val">${d.SalesRep||'—'}</div>
+          <div class="dc-val">${d.SalesRep||'-'}</div>
         </div>
         ${d.XeroInvoiceHeader?`<div class="detail-cell">
           <div class="dc-label">${HEADER_LABELS.CustomText05}</div>
@@ -1553,19 +1555,19 @@ async function showDetail(itemId, contextList) {
       <div class="detail-grid">
         <div class="detail-cell">
           <div class="dc-label">Company</div>
-          <div class="dc-val">${d.SoldToCompany||'—'}</div>
+          <div class="dc-val">${d.SoldToCompany||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Contact</div>
-          <div class="dc-val">${d.SoldToContact||'—'}</div>
+          <div class="dc-val">${d.SoldToContact||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Phone</div>
-          <div class="dc-val mono">${d.SoldToPhone||'—'}</div>
+          <div class="dc-val mono">${d.SoldToPhone||'-'}</div>
         </div>
         <div class="detail-cell">
           <div class="dc-label">Email</div>
-          <div class="dc-val" style="font-size:0.72rem;word-break:break-all">${d.SoldToEmail||'—'}</div>
+          <div class="dc-val" style="font-size:0.72rem;word-break:break-all">${d.SoldToEmail||'-'}</div>
         </div>
         ${d.SoldToAddress1?`<div class="detail-cell full">
           <div class="dc-label">Address</div>
@@ -1575,33 +1577,33 @@ async function showDetail(itemId, contextList) {
     `;
   } catch(e) {
     document.getElementById('panelBody').innerHTML =
-      `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">${e.message}</div></div>`;
+      `<div class="empty"><div class="empty-icon">&#9888;</div><div class="empty-text">${e.message}</div></div>`;
   }
 }
 
 async function showDocItems(docId, docNo, fromCal) {
-  document.getElementById('dayModalTitle').textContent = `Items — ${docNo}`;
+  document.getElementById('dayModalTitle').textContent = `Items - ${docNo}`;
   document.getElementById('dayModalBody').innerHTML = '<div class="loader"><div class="spinner"></div></div>';
   document.getElementById('dayModalOverlay').classList.add('open');
   try {
     const data = await apiFetch({mode:'docitems',docId});
     if (!data||!data.length) {
-      document.getElementById('dayModalBody').innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">No items found</div></div>`;
+      document.getElementById('dayModalBody').innerHTML = `<div class="empty"><div class="empty-icon">&#128205;</div><div class="empty-text">No items found</div></div>`;
       return;
     }
     document.getElementById('dayModalBody').innerHTML = data.map(i=>`
       <div class="day-item-row" onclick="closeDayModal();showDetail(${i.ItemID})">
         <div>
-          <div class="di-desc">${i.Description||'—'}</div>
+          <div class="di-desc">${i.Description||'-'}</div>
           ${i.ManufacturerPartNumber?`<div class="di-serial" style="color:var(--cyan)">${i.ManufacturerPartNumber}</div>`:''}
-          <div class="di-sub">${i.SoldToCompany||''} · Qty ${i.QtyTotal||1} · ${fmt(i.ExtendedPrice)}</div>
+          <div class="di-sub">${i.SoldToCompany||''} &middot; Qty ${i.QtyTotal||1} &middot; ${fmt(i.ExtendedPrice)}</div>
           ${i.SerialNumber?`<div class="di-serial">S/N: ${i.SerialNumber}</div>`:''}
         </div>
         <div>${shippedPill(i.ShippedStatus)}</div>
       </div>`).join('');
   } catch(e) {
     document.getElementById('dayModalBody').innerHTML =
-      `<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">${e.message}</div></div>`;
+      `<div class="empty"><div class="empty-icon">&#9888;</div><div class="empty-text">${e.message}</div></div>`;
   }
 }
 
@@ -1625,7 +1627,7 @@ function closePanel(e) {
     document.getElementById('panelOverlay').classList.remove('open');
 }
 
-// ── Search ────────────────────────────────────────────────────────────────────
+// -- Search --
 function handleSearch(type, val) {
   const clearIds = {serial:'clearSerial',company:'clearCompany',docno:'clearDocNo'};
   const el = document.getElementById(clearIds[type]);
@@ -1654,19 +1656,19 @@ async function runSearch(type, q) {
     const data = await apiFetch({mode:'search',q,searchType:type});
     if (!data.length) {
       area.innerHTML=`<div class="search-bar-notice">No results for: "${q}"</div>
-        <div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Try a different search term</div></div>`;
+        <div class="empty"><div class="empty-icon">&#128269;</div><div class="empty-text">Try a different search term</div></div>`;
       return;
     }
     const rows=data.map(i=>`
       <tr onclick="showDetail(${i.ItemID})">
-        <td class="td-docno">${i.DocNo||'—'}<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${i.DocType||''} · ${i.DocStatus||''}</div></td>
-        <td class="td-desc">${i.Description||'—'}</td>
-        <td class="td-company">${i.SoldToCompany||'—'}<div style="font-size:0.68rem;color:var(--muted);margin-top:1px">${i.SoldToContact||''}</div></td>
-        <td class="td-serial">${i.SerialNumber||'—'}</td>
-        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${i.ManufacturerPartNumber||'—'}</td>
+        <td class="td-docno">${i.DocNo||'-'}<div style="font-size:0.65rem;color:var(--muted);margin-top:2px">${i.DocType||''} &middot; ${i.DocStatus||''}</div></td>
+        <td class="td-desc">${i.Description||'-'}</td>
+        <td class="td-company">${i.SoldToCompany||'-'}<div style="font-size:0.68rem;color:var(--muted);margin-top:1px">${i.SoldToContact||''}</div></td>
+        <td class="td-serial">${i.SerialNumber||'-'}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${i.ManufacturerPartNumber||'-'}</td>
         <td>${shippedPill(i.ShippedStatus)}</td>
         <td class="td-date">${fmtShort(i.DeliveryDate)}</td>
-        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'—'}</td>
+        <td style="font-family:var(--mono);font-size:0.72rem;color:var(--dim)">${i.SalesRep||'-'}</td>
       </tr>`).join('');
     area.innerHTML=`
       <div class="search-bar-notice">${data.length} result${data.length!==1?'s':''} for: "<strong>${q}</strong>"</div>
@@ -1678,7 +1680,7 @@ async function runSearch(type, q) {
         <tbody>${rows}</tbody>
       </table>`;
   } catch(e) {
-    area.innerHTML=`<div class="empty"><div class="empty-icon">⚠</div><div class="empty-text">Search error: ${e.message}</div></div>`;
+    area.innerHTML=`<div class="empty"><div class="empty-icon">&#9888;</div><div class="empty-text">Search error: ${e.message}</div></div>`;
   }
 }
 
@@ -1687,13 +1689,13 @@ function clearAllSearches() {
   ['clearSerial','clearCompany','clearDocNo'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('visible');});
 }
 
-// ── Keyboard ──────────────────────────────────────────────────────────────────
+// -- Keyboard --
 document.addEventListener('keydown', e => {
   if (e.key==='Escape') { closePanel(); closeDayModal(); }
   if ((e.metaKey||e.ctrlKey)&&e.key==='k') { e.preventDefault(); document.getElementById('searchSerial').focus(); }
 });
 
-// ── URL / History ────────────────────────────────────────────────────────────
+// -- URL / History --
 window.addEventListener('popstate', (e) => {
   const tab = e.state?.tab || new URLSearchParams(window.location.search).get('tab') || 'calendar';
   const btn = document.querySelector(`[data-tab="${tab}"]`);
@@ -1701,7 +1703,7 @@ window.addEventListener('popstate', (e) => {
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const titles = {
-      calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue — Not Shipped',
+      calendar:'Delivery Calendar', upcoming:'Upcoming Deliveries', overdue:'Overdue - Not Shipped',
       unshipped:'Unshipped Items', shipped:'Shipped Items', noserial:'Missing Serial Numbers',
       'new-orders':'New Orders', 'completed-orders':'Completed Orders',
       'open-quotes':'Open Quotes', 'won-quotes':'Won Quotes', search:'Search Results'
@@ -1712,24 +1714,23 @@ window.addEventListener('popstate', (e) => {
   }
 });
 
-// ── Theme ────────────────────────────────────────────────────────────────────
+// -- Theme --
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
   const btn = document.getElementById('themeToggle');
-  if (btn) btn.textContent = isLight ? '🌙' : '☀️';
+  if (btn) btn.textContent = isLight ? '&#127769;&#65039;' : '&#9728;&#65039;';
   try { localStorage.setItem('pc_theme', isLight ? 'light' : 'dark'); } catch(_) {}
 }
 
-// Restore saved theme
 try {
   if (localStorage.getItem('pc_theme') === 'light') {
     document.body.classList.add('light');
     const btn = document.getElementById('themeToggle');
-    if (btn) btn.textContent = '🌙';
+    if (btn) btn.textContent = '&#127769;&#65039;';
   }
 } catch(_) {}
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// -- Init --
 loadStats();
 const _initTab = new URLSearchParams(window.location.search).get('tab') || 'calendar';
 const _initBtn = document.querySelector(`[data-tab="${_initTab}"]`);
@@ -1738,7 +1739,6 @@ if (_initBtn) {
   _initBtn.classList.add('active');
   currentTab = _initTab;
 }
-// Set initial URL state
 try {
   const _u = new URL(window.location.href);
   _u.searchParams.set('tab', _initTab);
