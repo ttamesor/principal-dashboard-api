@@ -775,6 +775,7 @@ let calMonth     = new Date().getMonth() + 1;
 let calData      = [];
 let calView      = 'week';
 let calDocTypes  = new Set(['ORDER', 'QUOTE']); // toggle which doc types show on calendar
+let itemDocTypes = new Set(['ORDER', 'QUOTE']); // toggle which doc types show on item tables
 let searchTimeout = null;
 const calCache   = {};
 let calWeekStart = getWeekStart(new Date()).getDate();
@@ -1149,6 +1150,13 @@ function toggleCalDocType(type, checked) {
   else renderCalendar();
 }
 
+function toggleItemDocType(type, checked) {
+  if (checked) itemDocTypes.add(type);
+  else itemDocTypes.delete(type);
+  const title = document.querySelector('.section-title')?.textContent || '';
+  _buildItemTable(title);
+}
+
 function calNav(dir) {
   if (calView==='week') {
     const d=new Date(calYear,calMonth-1,calWeekStart);
@@ -1235,6 +1243,7 @@ function _buildItemTable(title) {
   const coVal   = (document.getElementById('filterCompany')?.value || '').toLowerCase().trim();
 
   _itemFiltered = _itemData.filter(i => {
+    if (!itemDocTypes.has(i.DocType)) return false;
     if (repVal && (i.SalesRep||'') !== repVal) return false;
     if (coVal  && !(i.SoldToCompany||'').toLowerCase().includes(coVal)) return false;
     return true;
@@ -1284,6 +1293,15 @@ function _buildItemTable(title) {
       <div class="section-title">${title}</div>
     </div>
     <div class="filter-bar">
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.82rem;color:var(--text)">
+        <input type="checkbox" ${itemDocTypes.has('ORDER')?'checked':''} onchange="toggleItemDocType('ORDER',this.checked)" style="accent-color:var(--blue)">
+        <span>Orders</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none;font-size:0.82rem;color:var(--text)">
+        <input type="checkbox" ${itemDocTypes.has('QUOTE')?'checked':''} onchange="toggleItemDocType('QUOTE',this.checked)" style="accent-color:var(--purple)">
+        <span>Quotes</span>
+      </label>
+      <div style="width:1px;height:20px;background:var(--border2);margin:0 4px"></div>
       <select class="filter-select" id="filterRep" onchange="_buildItemTable('${title}')">
         <option value="">All reps</option>
         ${reps.map(r=>`<option value="${r}"${r===repVal?'selected':''}>${r}</option>`).join('')}
