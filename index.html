@@ -1197,9 +1197,10 @@ function showDayItems(day) {
     `${day} ${months[calMonth-1]} ${calYear} - ${docGroups.length} order${docGroups.length!==1?'s':''}`;
 
   document.getElementById('dayModalBody').innerHTML = docGroups.map(group => {
-    const allShipped  = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
-    const anyReturned = group._items.some(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('return'));
-    const statusText  = [...new Set(group._items.map(i => i.ShippedStatus||'Pending'))].join(' / ');
+    const statuses    = [...new Set(group._items.map(i => (i.ShippedStatus||'Pending').trim()))];
+const statusText  = statuses.join(' / ');
+const allShipped  = statuses.every(s => s.toLowerCase().includes('shipped'));
+const anyReturned = statuses.some(s => s.toLowerCase().includes('return'));
     const count = group._items.length;
     const pill = allShipped
       ? '<span class="pill pill-shipped">&#10003; Shipped</span>'
