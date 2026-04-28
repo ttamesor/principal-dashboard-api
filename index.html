@@ -1078,7 +1078,7 @@ function renderWeekView() {
         const anyReturned = group._items.some(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('returned'));
         const color = allShipped ? 'var(--green)' : anyReturned ? 'var(--purple)' : isPast ? 'var(--red)' : 'var(--amber)';
         const count = group._items.length;
-        const statusText = group._items.map(i => i.ShippedStatus||'Pending').filter((v,i,a)=>a.indexOf(v)===i).join(' / ');
+        const statusText = [...new Set(group._items.map(i => i.ShippedStatus||'Pending'))].join(' / ');
         const pill = allShipped
           ? '<span class="pill pill-shipped">&#10003; Shipped</span>'
           : anyReturned
