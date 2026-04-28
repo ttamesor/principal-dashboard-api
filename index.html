@@ -1624,7 +1624,10 @@ async function showDocItems(docId, docNo, fromCal) {
           <div class="di-sub">${i.SoldToCompany||''} &middot; Qty ${i.QtyTotal||1} &middot; ${fmt(i.ExtendedPrice)}</div>
           ${i.SerialNumber?`<div class="di-serial">S/N: ${i.SerialNumber}</div>`:''}
         </div>
-        <div>${shippedPill(i.ShippedStatus)}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          ${shippedPill(i.ShippedStatus)}
+          ${i.DeliveryDate?`<div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted)">${fmtShort(i.DeliveryDate)}</div>`:''}
+        </div>
       </div>`).join('');
   } catch(e) {
     document.getElementById('dayModalBody').innerHTML =
