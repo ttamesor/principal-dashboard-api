@@ -1197,15 +1197,22 @@ function showDayItems(day) {
     `${day} ${months[calMonth-1]} ${calYear} - ${docGroups.length} order${docGroups.length!==1?'s':''}`;
 
   document.getElementById('dayModalBody').innerHTML = docGroups.map(group => {
-    const allShipped = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
+    const allShipped  = group._items.every(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('shipped'));
+    const anyReturned = group._items.some(i => i.ShippedStatus&&i.ShippedStatus.toLowerCase().includes('return'));
+    const statusText  = [...new Set(group._items.map(i => i.ShippedStatus||'Pending'))].join(' / ');
     const count = group._items.length;
+    const pill = allShipped
+      ? '<span class="pill pill-shipped">&#10003; Shipped</span>'
+      : anyReturned
+        ? `<span class="pill" style="background:rgba(139,92,246,0.12);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">${statusText}</span>`
+        : '<span class="pill pill-unshipped">Pending</span>';
     return `<div class="day-item-row" onclick="closeDayModal();showDocItems(${group.DocID},'${(group.DocNo||'').replace(/'/g,"\\'")}',true)">
       <div>
         <div class="di-desc">${group.DocNo||'-'} &middot; ${group.SoldToCompany||'-'}</div>
         <div class="di-sub">${group.SalesRep||''} &middot; ${count} item${count!==1?'s':''}</div>
         <div class="di-sub" style="margin-top:2px;color:var(--dim)">${group._items.map(i=>i.Description||(i.ManufacturerPartNumber||'-')).join(' &middot; ')}</div>
       </div>
-      <div>${allShipped?'<span class="pill pill-shipped">&#10003; Shipped</span>':'<span class="pill pill-unshipped">Pending</span>'}</div>
+      <div>${pill}</div>
     </div>`;
   }).join('');
   document.getElementById('dayModalOverlay').classList.add('open');
