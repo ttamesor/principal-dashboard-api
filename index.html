@@ -792,7 +792,7 @@ function fmtDate(d) {
 }
 function fmtShort(d) {
   if (!d) return '-';
-  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+  return new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'});
 }
 function daysClass(n) {
   if (n===null||n===undefined) return '';
@@ -810,7 +810,8 @@ function daysLabel(n) {
 function shippedPill(s) {
   if (!s) return '<span class="pill pill-unshipped">Unshipped</span>';
   if (s.toLowerCase().includes('shipped')) return '<span class="pill pill-shipped">&#10003; '+s+'</span>';
-  return '<span class="pill pill-unshipped">'+(s||'Unshipped')+'</span>';
+  if (s.toLowerCase().includes('return')) return '<span class="pill" style="background:rgba(139,92,246,0.12);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">'+s+'</span>';
+  return '<span class="pill pill-unshipped">'+s+'</span>';
 }
 function getWeekStart(date) {
   const d = new Date(date);
