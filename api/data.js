@@ -104,7 +104,7 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND MONTH(i.CustomDate01) = @m
           AND YEAR(i.CustomDate01)  = @y
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -119,7 +119,7 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND i.CustomDate01 >= CAST(GETDATE() AS DATE)
           AND i.CustomDate01 <= DATEADD(day, 90, GETDATE())
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -134,7 +134,7 @@ export default async function handler(req, res) {
         WHERE i.CustomDate01 IS NOT NULL
           AND i.CustomDate01 < CAST(GETDATE() AS DATE)
           AND (i.CustomText02 IS NULL OR i.CustomText02 NOT LIKE '%Shipped%')
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -148,7 +148,7 @@ export default async function handler(req, res) {
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE (i.CustomText02 IS NULL OR i.CustomText02 NOT LIKE '%Shipped%')
           AND i.CustomDate01 IS NOT NULL
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
@@ -161,7 +161,7 @@ export default async function handler(req, res) {
         FROM DocumentItems i
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE i.CustomText02 LIKE '%Shipped%'
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 DESC
       `);
@@ -223,7 +223,7 @@ export default async function handler(req, res) {
         INNER JOIN DocumentHeaders h ON i.DocID = h.ID
         WHERE i.CustomDate01 IS NOT NULL
           AND (i.CustomText04 IS NULL OR LTRIM(RTRIM(i.CustomText04)) = '')
-          AND h.Created >= ${DATE_FLOOR}
+          AND (h.Created >= ${DATE_FLOOR} OR i.CustomDate01 >= '2026-01-01')
           AND ${ITEM_FILTER}
         ORDER BY i.CustomDate01 ASC
       `);
